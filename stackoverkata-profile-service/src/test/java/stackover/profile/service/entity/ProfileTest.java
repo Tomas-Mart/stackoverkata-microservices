@@ -14,8 +14,8 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import stackover.profile.service.repository.ProfileRepository;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Set;

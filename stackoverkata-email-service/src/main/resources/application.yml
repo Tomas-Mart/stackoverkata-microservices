@@ -1,8 +1,61 @@
 server:
-  port: 4453
+  port: ${EMAIL_SERVICE_PORT:8184}
 
 spring:
   application:
     name: stackover-email-service
   profiles:
-    active: dev
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  config:
+    import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}"
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    connection-timeout: 5000
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${random.int}
+    prefer-ip-address: true
+    hostname: ${EUREKA_HOSTNAME:localhost}
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+    healthcheck:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+
+logging:
+  level:
+    root: ${LOG_LEVEL:INFO}
+    org.springframework.mail: DEBUG
+    com.stackoverkata.email: DEBUG

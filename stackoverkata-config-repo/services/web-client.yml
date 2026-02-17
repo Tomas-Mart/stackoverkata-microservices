@@ -6,10 +6,13 @@ spring:
 
 frontend:
   api:
-    base-url: http://api-gateway:8765/api
+    base-url: ${API_GATEWAY_URL:http://gateway-service:8080/api}
 
 management:
   endpoints:
     web:
       exposure:
         include: health,info
+  endpoint:
+    health:
+      show-details: always

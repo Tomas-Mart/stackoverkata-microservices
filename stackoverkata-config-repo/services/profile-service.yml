@@ -2,14 +2,34 @@ spring:
   application:
     name: stackover-profile-service
   r2dbc:
-    url: r2dbc:postgresql://postgres-profile:5432/stackover_profile_service
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
+    url: r2dbc:postgresql://postgres-profile:5432/${PROFILE_DB_NAME:profile_db}
+    username: ${PROFILE_DB_USER:postgres}
+    password: ${PROFILE_DB_PASSWORD:root}
     pool:
       initial-size: 5
       max-size: 15
+      max-idle-time: 30m
 
 eureka:
   client:
     service-url:
-      defaultZone: http://stackoverkata-eureka-server:8761/eureka/
+      defaultZone: http://eureka-server:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+---
+spring:
+  config:
+    activate:
+      on-profile: kubernetes
+  r2dbc:
+    url: r2dbc:postgresql://${POSTGRES_PROFILE_SERVICE_HOST}:${POSTGRES_PROFILE_SERVICE_PORT}/${POSTGRES_PROFILE_SERVICE_DB}

@@ -1,9 +1,15 @@
 server:
-  port: 8765
+  port: ${GATEWAY_PORT:8088}
 
 spring:
+  main:
+    allow-bean-definition-overriding: true
   application:
     name: api-gateway
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  config:
+    import: "optional:configserver:http://config-service:8080"
   cloud:
     gateway:
       discovery:
@@ -11,31 +17,59 @@ spring:
           enabled: true
           lower-case-service-id: true
       routes:
+        - id: auth-service
+          uri: lb://stackover-auth-service
+          predicates:
+            - Path=/api/auth/**
+        - id: profile-service
+          uri: lb://stackover-profile-service
+          predicates:
+            - Path=/api/profiles/**
+        - id: resource-service
+          uri: lb://stackover-resource-service
+          predicates:
+            - Path=/api/resources/**
+        - id: email-service
+          uri: lb://stackover-email-service
+          predicates:
+            - Path=/api/email/**
         - id: actuator
           uri: http://localhost:${server.port}
           predicates:
             - Path=/actuator/**
 
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${random.int}
+    prefer-ip-address: true
+    hostname: ${EUREKA_HOSTNAME:stackover-gateway}
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://eureka-server:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+    healthcheck:
+      enabled: true
+
 management:
   endpoints:
     web:
       exposure:
-        include: health, info, metrics, gateway
+        include: health,info,metrics,prometheus,gateway
   endpoint:
     health:
       show-details: always
-    info:
-      enabled: true
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-    healthcheck:
-      enabled: true
+  metrics:
+    export:
+      prometheus:
 
 app:
   jwt:
     access-expiration-ms: 86400000
     refresh-expiration-ms: 2592000000
-    secret: KX9pPmTqYtXuWrZv3w6z5C8F1J4H7N2B5E9R0DcGbQa
+    secret: ${JWT_SECRET:KX9pPmTqYtXuWrZv3w6z5C8F1J4H7N2B5E9R0DcGbQa}
+
+logging:
+  level:
+    root: ${LOG_LEVEL:INFO}
+    org.springframework.cloud.gateway: DEBUG

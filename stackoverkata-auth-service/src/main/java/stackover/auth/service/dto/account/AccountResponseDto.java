@@ -5,7 +5,7 @@ import lombok.Builder;
 import stackover.auth.service.model.Account;
 import stackover.auth.service.util.enums.RoleNameEnum;
 
-import javax.validation.constraints.Email;
+import jakarta.validation.constraints.Email;
 
 /**
  * DTO для ответа с данными аккаунта

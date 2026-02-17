@@ -14,7 +14,6 @@
     <artifactId>stackover-web-client</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
-
     <name>stackover-web-client</name>
     <description>Web client for StackOverKata platform</description>
 

@@ -6,7 +6,7 @@ import stackover.auth.service.dto.token.RefreshTokenResponseDto;
 import stackover.auth.service.model.Account;
 import stackover.auth.service.model.RefreshToken;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 public interface RefreshTokenService {
 

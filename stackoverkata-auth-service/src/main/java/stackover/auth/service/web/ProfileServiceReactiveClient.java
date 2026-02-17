@@ -1,7 +1,7 @@
 package stackover.auth.service.web;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -28,8 +28,10 @@ public class ProfileServiceReactiveClient {
                 .uri("/api/inner/profile")
                 .bodyValue(profilePostDto)
                 .retrieve()
-                .onStatus(HttpStatus::isError, response ->
-                        Mono.error(new FeignRequestException("Profile service unavailable. Cannot create profile."))
+                .onStatus(HttpStatusCode::isError, response ->
+                        Mono.error(new FeignRequestException(
+                                String.format("Profile service unavailable. Cannot create profile. Status: %s",
+                                        response.statusCode())))
                 )
                 .toBodilessEntity()
                 .then();
@@ -42,8 +44,10 @@ public class ProfileServiceReactiveClient {
                         .queryParam("accountId", accountId)
                         .build())
                 .retrieve()
-                .onStatus(HttpStatus::isError, response ->
-                        Mono.error(new FeignRequestException("Profile service unavailable. Cannot get profile."))
+                .onStatus(HttpStatusCode::isError, response ->
+                        Mono.error(new FeignRequestException(
+                                String.format("Profile service unavailable. Cannot get profile. Status: %s",
+                                        response.statusCode())))
                 )
                 .bodyToMono(ProfileResponseDto.class);
     }

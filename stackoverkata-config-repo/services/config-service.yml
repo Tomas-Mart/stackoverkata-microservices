@@ -1,18 +1,31 @@
 spring:
   application:
-    name: stackoverkata-cloud-config-service
+    name: stackover-cloud-config-service
   cloud:
     config:
       server:
         git:
-          uri: ${CONFIG_REPO_URL}
-          search-paths: '{application}'
+          uri: ${CONFIG_REPO_URL:https://github.com/Tomas-Mart/stackoverkata-config-repo.git}
+          search-paths: services
+          default-label: ${CONFIG_REPO_BRANCH:main}
           clone-on-start: true
+          timeout: 10
 
 server:
-  port: 8888
+  port: ${CONFIG_SERVICE_PORT:8888}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
 
 management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,refresh,metrics,prometheus
   endpoint:
     health:
       show-details: always
