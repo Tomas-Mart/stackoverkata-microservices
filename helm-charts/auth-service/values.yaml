@@ -1,0 +1,50 @@
+# Количество реплик подов
+replicaCount: 2
+
+# Настройки образа контейнера
+image:
+  # Репозиторий и имя образа
+  repository: your-registry/stackover-auth-service
+  # Тег образа
+  tag: latest
+  # Политика загрузки образа
+  pullPolicy: IfNotPresent
+
+# Настройки сервиса
+service:
+  # Тип сервиса (ClusterIP, NodePort, LoadBalancer)
+  type: ClusterIP
+  # Порт, на котором сервис доступен внутри кластера
+  port: 8080
+  # Порт контейнера, на котором работает приложение
+  internalPort: 8180
+
+# Переменные окружения
+env:
+  config:
+    # Активируемый профиль Spring
+    SPRING_PROFILES_ACTIVE: "kubernetes"
+    # URL сервера Eureka для регистрации
+    EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://stackoverkata-eureka-server:8761/eureka/"
+
+# Ограничения ресурсов
+resources:
+  # Максимально доступные ресурсы
+  limits:
+    cpu: "1"
+    memory: "1Gi"
+  # Гарантированные ресурсы
+  requests:
+    cpu: "500m"
+    memory: "512Mi"
+
+# Настройки автоматического масштабирования
+autoscaling:
+  # Включено ли автоматическое масштабирование
+  enabled: true
+  # Минимальное количество реплик
+  minReplicas: 2
+  # Максимальное количество реплик
+  maxReplicas: 5
+  # Целевая загрузка CPU для масштабирования
+  targetCPUUtilizationPercentage: 70

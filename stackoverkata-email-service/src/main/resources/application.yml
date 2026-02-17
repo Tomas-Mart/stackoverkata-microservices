@@ -1,0 +1,8 @@
+server:
+  port: 4453
+
+spring:
+  application:
+    name: stackover-email-service
+  profiles:
+    active: dev

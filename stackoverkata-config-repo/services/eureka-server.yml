@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: stackoverkata-eureka-server
+
+server:
+  port: 8761
+
+eureka:
+  instance:
+    hostname: stackoverkata-eureka-server
+  client:
+    register-with-eureka: false
+    fetchRegistry: false
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

@@ -1,0 +1,41 @@
+server:
+  port: 8765
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: actuator
+          uri: http://localhost:${server.port}
+          predicates:
+            - Path=/actuator/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, gateway
+  endpoint:
+    health:
+      show-details: always
+    info:
+      enabled: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    healthcheck:
+      enabled: true
+
+app:
+  jwt:
+    access-expiration-ms: 86400000
+    refresh-expiration-ms: 2592000000
+    secret: KX9pPmTqYtXuWrZv3w6z5C8F1J4H7N2B5E9R0DcGbQa

@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: stackover-auth-service
+  r2dbc:
+    url: r2dbc:postgresql://postgres-auth:5432/stackover_auth_service
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD}
+    pool:
+      initial-size: 5
+      max-size: 15
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://stackoverkata-eureka-server:8761/eureka/
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+    access-expiration-ms: 86400000
+    refresh-expiration-ms: 2592000000
+
+---
+spring:
+  config:
+    activate:
+      on-profile: kubernetes
+  r2dbc:
+    url: r2dbc:postgresql://${POSTGRES_AUTH_SERVICE_HOST}:${POSTGRES_AUTH_SERVICE_PORT}/${POSTGRES_AUTH_SERVICE_DB}

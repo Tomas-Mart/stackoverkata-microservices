@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page</title>
+    <!-- подключаем Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Настраиваем  CSS -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            background-color: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+        }
+        .main-content {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .question-summary {
+            border-bottom: 1px solid #e3e6e8;
+            padding: 12px 0;
+        }
+        .question-title {
+            color: #0077cc;
+            font-size: 16px;
+        }
+        .tags {
+            display: inline-block;
+            margin-right: 5px;
+            background-color: #e1ecf4;
+            color: #39739d;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        .stats {
+            font-size: 12px;
+            color: #6a737c;
+        }
+        .navbar {
+            background-color: #f8f9fa;
+            border-top: 3px solid #f48024;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .footer {
+            background-color: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            padding: 20px 0;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<!-- тут будем подключать JS-->
+<div id="header">
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">StackOverKata</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Questions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Tags</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Users</a>
+                    </li>
+                </ul>
+                <form class="d-flex">
+                    <input class="form-control me-2" type="search" placeholder="Search...">
+                    <button class="btn btn-outline-primary" type="submit">Search</button>
+                </form>
+                <ul class="navbar-nav ms-3">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Log in</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Sign up</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar placeholder (will be loaded by JS) -->
+        <div id="sidebar" class="col-md-2 d-none d-md-block sidebar">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Questions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Tags</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Users</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Companies</a>
+                    </li>
+                    <hr>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Collectives</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Explore Collectives</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Главная окно -->
+        <main class="col-md-7 col-lg-8 ms-sm-auto px-md-4 py-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Top Questions</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Interesting</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Hot</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Week</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Month</button>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-primary">Ask Question</button>
+                </div>
+            </div>
+
+            <div class="main-content p-3">
+                <!-- пример вопросов 1 -->
+                <div class="question-summary">
+                    <div class="row">
+                        <div class="col-2 text-end">
+                            <div class="stats">
+                                <div>0 votes</div>
+                                <div>1 answer</div>
+                                <div>12 views</div>
+                            </div>
+                        </div>
+                        <div class="col-10">
+                            <h3 class="question-title">How to center a div vertically and horizontally?</h3>
+                            <div class="mb-2">I'm trying to center a div both vertically and horizontally on my page. I've tried several methods but none seem to work properly. What's the best way to achieve this with CSS?</div>
+                            <div>
+                                <span class="tags">html</span>
+                                <span class="tags">css</span>
+                                <span class="tags">flexbox</span>
+                            </div>
+                            <div class="text-end mt-2">
+                                <small>asked 2 hours ago by <a href="#">user123</a></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Примеры вопросов 2  -->
+                <div class="question-summary">
+                    <div class="row">
+                        <div class="col-2 text-end">
+                            <div class="stats">
+                                <div>5 votes</div>
+                                <div>2 answers</div>
+                                <div>45 views</div>
+                            </div>
+                        </div>
+                        <div class="col-10">
+                            <h3 class="question-title">What's the difference between let and var in JavaScript?</h3>
+                            <div class="mb-2">I'm learning JavaScript and I'm confused about when to use let and when to use var. Can someone explain the key differences between these two variable declarations?</div>
+                            <div>
+                                <span class="tags">javascript</span>
+                                <span class="tags">variables</span>
+                                <span class="tags">es6</span>
+                            </div>
+                            <div class="text-end mt-2">
+                                <small>asked yesterday by <a href="#">new_developer</a></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Пример вопросов 3 -->
+                <div class="question-summary">
+                    <div class="row">
+                        <div class="col-2 text-end">
+                            <div class="stats">
+                                <div>12 votes</div>
+                                <div>4 answers</div>
+                                <div>102 views</div>
+                            </div>
+                        </div>
+                        <div class="col-10">
+                            <h3 class="question-title">How to properly handle errors in async/await functions?</h3>
+                            <div class="mb-2">I'm working with async/await in my Node.js application and I'm not sure what's the best practice for error handling. Should I use try/catch blocks for every async call?</div>
+                            <div>
+                                <span class="tags">javascript</span>
+                                <span class="tags">node.js</span>
+                                <span class="tags">async-await</span>
+                                <span class="tags">error-handling</span>
+                            </div>
+                            <div class="text-end mt-2">
+                                <small>asked 3 days ago by <a href="#">async_dev</a></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- нумерация  -->
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">Previous</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </main>
+
+        <!-- Right sidebar -->
+        <div class="col-md-3 d-none d-md-block">
+            <div class="position-sticky pt-3">
+                <div class="card mb-3">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">The Overflow Blog</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><a href="#">How Stack Overflow is leveling up its unit testing game</a></p>
+                        <p><a href="#">The creator of PyTorch Lightning on the AI hype cycle</a></p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Featured on Meta</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><a href="#">Announcing a change to the data-dump process</a></p>
+                        <p><a href="#">What makes a homepage useful for logged-in users</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- нижний колонтитул -->
+<div id="footer" class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <h5>Stack Overflow Clone</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#">Questions</a></li>
+                    <li><a href="#">Help</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>Products</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#">Teams</a></li>
+                    <li><a href="#">Advertising</a></li>
+                    <li><a href="#">Collectives</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>Company</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>Stack Exchange Network</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#">Technology</a></li>
+                    <li><a href="#">Culture & recreation</a></li>
+                    <li><a href="#">Life & arts</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 text-center">
+                <p class="text-muted">site design / logo © 2023 Stack Exchange Inc; user contributions licensed under CC BY-SA.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Заполнитель для файлов JS, которые будут загружать верхний колонтитул, нижний колонтитул и боковую панель -->
+<script src="/static/js/header.js" defer></script>
+<script src="/static/js/footer.js" defer></script>
+<script src="/static/js/sidebar.js" defer></script>
+</body>
+</html>

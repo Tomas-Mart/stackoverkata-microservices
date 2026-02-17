@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stackover-config-service
+  namespace: config-server
+  labels:
+    app: config-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: config-service
+  template:
+    metadata:
+      labels:
+        app: config-service
+    spec:
+      containers:
+        - name: config-service
+          image: kseami/stackoverkata-config-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "kubernetes"
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: "http://stackoverkata-eureka-server.default.svc.cluster.local:8761/eureka/"
+            - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+              value: "health,info,refresh"
+            - name: MANAGEMENT_ENDPOINT_HEALTH_SHOWDETAILS
+              value: "always"
+            - name: SPRING_CLOUD_CONFIG_SERVER_GIT_URI
+              valueFrom:
+                secretKeyRef:
+                  name: config-service-secrets
+                  key: SPRING_CLOUD_CONFIG_SERVER_GIT_URI
+            - name: SPRING_CLOUD_CONFIG_SERVER_GIT_SEARCHPATHS
+              valueFrom:
+                secretKeyRef:
+                  name: config-service-secrets
+                  key: SPRING_CLOUD_CONFIG_SERVER_GIT_SEARCHPATHS
+            - name: SPRING_CLOUD_CONFIG_SERVER_GIT_CLONE_ON_START
+              valueFrom:
+                secretKeyRef:
+                  name: config-service-secrets
+                  key: SPRING_CLOUD_CONFIG_SERVER_GIT_CLONE_ON_START
+            - name: SPRING_CLOUD_CONFIG_SERVER_GIT_DEFAULT_LABEL
+              valueFrom:
+                secretKeyRef:
+                  name: config-service-secrets
+                  key: SPRING_CLOUD_CONFIG_SERVER_GIT_DEFAULT_LABEL
+            - name: ENCRYPT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: config-service-secrets
+                  key: ENCRYPT_KEY
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 120
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/configServer
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            timeoutSeconds: 3
+            failureThreshold: 3
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "infra"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - docker-desktop

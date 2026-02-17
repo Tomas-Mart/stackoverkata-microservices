@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: stackover-resource-service
+  r2dbc:
+    url: r2dbc:postgresql://postgres-resource:5432/stackover_resource_service
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: ${RABBITMQ_USER}
+    password: ${RABBITMQ_PASSWORD}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://stackoverkata-eureka-server:8761/eureka/

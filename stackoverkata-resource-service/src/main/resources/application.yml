@@ -1,0 +1,69 @@
+server:
+  port: 8181
+
+spring:
+  application:
+    name: stackover-resource-service
+
+  r2dbc:
+    url: ${DATABASE_URL:r2dbc:postgresql://localhost:5432/stackover_resource_service}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:root}
+    pool:
+      max-size: 10
+      initial-size: 2
+    properties:
+      dialect: postgresql
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: 5672
+    username: guest
+    password: guest
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: resource-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+  webflux:
+    base-path: /api
+
+  cloud:
+    circuitbreaker:
+      resilience4j:
+        enabled: true
+    openfeign:
+      enabled: false
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${server.port}
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
+
+app:
+  services:
+    auth:
+      url: http://stackover-auth-service
+    profile:
+      url: http://stackover-profile-service
+  jwt:
+    access-expiration-ms: 86400000
+    refresh-expiration-ms: 2592000000
+    secret: KX9pPmTqYtXuWrZv3w6z5C8F1J4H7N2B5E9R0DcGbQa
+
+logging:
+  level:
+    root: INFO
+    org.springframework.data.r2dbc: DEBUG
+    org.springframework.web.reactive: DEBUG

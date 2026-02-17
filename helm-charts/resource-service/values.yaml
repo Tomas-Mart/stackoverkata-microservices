@@ -1,0 +1,10 @@
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+            - key: app
+              operator: In
+              values:
+                - stackoverkata-resource-service
+        topologyKey: "kubernetes.io/hostname"

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-service-config
+  namespace: config-server
+data:
+  MANAGEMENT_ENDPOINT_HEALTH_SHOWDETAILS: "always"
+  MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info,refresh"
+  SPRING_CLOUD_CONFIG_SERVER_GIT_SEARCHPATHS: "services/{application}"
+  SPRING_PROFILES_ACTIVE: "kubernetes"

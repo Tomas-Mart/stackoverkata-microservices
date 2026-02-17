@@ -1,0 +1,63 @@
+replicaCount: 1
+
+image:
+  repository: kseami/stackoverkata-config-service
+  tag: latest
+  pullPolicy: Always
+
+git:
+  uri: "https://github.com/Tomas-Mart/stackoverkata-config-repo.git"
+  searchPaths: "{application},services"
+  cloneOnStart: true
+  timeout: 10
+
+service:
+  type: ClusterIP
+  port: 8080
+
+eureka:
+  client:
+    serviceUrl: "http://stackoverkata-eureka-server.default.svc.cluster.local:8761/eureka/"
+    registerWithEureka: true
+    fetchRegistry: true
+
+resources:
+  requests:
+    cpu: "50m"
+    memory: "64Mi"
+  limits:
+    cpu: "200m"
+    memory: "256Mi"
+
+tolerations:
+  - key: "dedicated"
+    operator: "Equal"
+    value: "infra"
+    effect: "NoSchedule"
+  - key: "node-role.kubernetes.io/control-plane"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - docker-desktop
+
+readinessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8080
+  initialDelaySeconds: 120
+  periodSeconds: 10
+
+livenessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8080
+  initialDelaySeconds: 180
+  periodSeconds: 10

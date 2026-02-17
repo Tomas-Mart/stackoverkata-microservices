@@ -1,0 +1,5 @@
+apiVersion: v2
+name: stackoverkata-cloud-config-service
+description: Spring Cloud Config Server
+version: 0.1.0
+appVersion: "2.7.0"

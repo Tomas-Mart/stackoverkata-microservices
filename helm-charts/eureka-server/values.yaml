@@ -1,0 +1,54 @@
+replicaCount: 3
+
+image:
+  repository: kseami/stackoverkata-eureka-server
+  tag: "1.0.0"
+  pullPolicy: IfNotPresent
+
+# Основной сервис (NodePort для доступа извне)
+service:
+  type: NodePort
+  port: 8761
+  nodePort: 30001
+
+# Headless Service для внутренней коммуникации
+headlessService:
+  enabled: true
+  port: 8761
+
+# Конфигурация Eureka
+eureka:
+  server:
+    enableSelfPreservation: false  # Отключено для тестов, в продакшене лучше true
+    evictionIntervalTimerInMs: 5000
+  instance:
+    hostname: "${HOSTNAME}.stackoverkata-eureka-server-internal"
+    appname: eureka-server
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: "http://stackoverkata-eureka-server-0.stackoverkata-eureka-server-internal:8761/eureka,http://stackoverkata-eureka-server-1.stackoverkata-eureka-server-internal:8761/eureka,http://stackoverkata-eureka-server-2.stackoverkata-eureka-server-internal:8761/eureka"
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: node-role
+              operator: In
+              values: [ infra ]
+
+tolerations:
+  - key: "dedicated"
+    operator: "Equal"
+    value: "infra"
+    effect: "NoSchedule"

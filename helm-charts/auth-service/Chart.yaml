@@ -1,0 +1,6 @@
+apiVersion: v2
+name: stackover-auth-service
+description: Authentication Service for StackOverKata
+type: application
+version: 0.1.0
+appVersion: "1.0"

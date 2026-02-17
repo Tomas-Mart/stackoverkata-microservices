@@ -1,0 +1,228 @@
+### Maven ###
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+### Maven Wrapper ###
+/mvnw
+/mvnw.cmd
+/.mvn/wrapper/maven-wrapper.properties
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+.classpath
+.project
+.settings
+.factorypath
+.springBeans
+.sts4-cache
+
+### Eclipse ###
+.apt_generated
+.settings/
+.classpath
+.project
+.factorypath
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+### VS Code ###
+.vscode/
+.code-workspace
+
+### Compiled files ###
+*.class
+*.jar
+*.war
+*.ear
+*.log
+*.tmp
+*.temp
+*.pid
+*.lock
+*.dump
+*.hprof
+
+### Package Files ###
+*.jar
+*.war
+*.ear
+*.tar
+*.zip
+*.gz
+*.7z
+*.rar
+
+### Logs ###
+logs/
+*.log
+*.out
+*.err
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+### OS generated files ###
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+### Docker ###
+Dockerfile
+docker-compose*.yml
+docker-compose*.yaml
+.dockerignore
+docker/
+*.dockerfile
+
+### Docker volumes (не игнорировать если нужны) ###
+# volumes/
+# **/volumes/
+
+### Kubernetes ###
+kubectl.exe
+minikube*
+helm.zip
+*.kubeconfig
+kubeconfig
+.charts/
+.helm/
+
+### Database ###
+**/db/changelog/
+**/db/migrations/
+*.changelog.xml
+*.changelog.json
+*.changelog.yaml
+liquibase.properties
+init.sql
+*.sql
+*.db
+*.sqlite
+
+### Application Properties (секреты) ###
+application-dev.yml
+application-prod.yml
+application-test.yml
+application-local.yml
+application-*.yml
+.env
+.env.local
+.env.*
+!.env.example
+application.properties
+bootstrap.properties
+bootstrap-*.properties
+
+### Secret files ###
+*.pem
+*.key
+*.crt
+*.keystore
+*.jks
+*.p12
+secrets/
+
+### Temp files ###
+tmp/
+temp/
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+### Amplicode ###
+amplicode.xml
+*.amplicode
+/amplicode-*/
+converters/
+
+### Test files ###
+**/src/test/resources/application-test.yml
+**/target/test-classes/
+**/surefire-reports/
+**/failsafe-reports/
+
+### Specific service exclusions (не трогать) ###
+# Сохраняем пустые .gitkeep файлы для структуры
+**/db/changelog/.gitkeep
+!**/db/changelog/.gitkeep
+
+### GitKeep files (сохраняем) ###
+!.gitkeep
+!.gitignore
+!**/.gitkeep
+
+### Maven wrapper (сохраняем) ###
+!.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.properties
+
+### Build directories ###
+**/build/
+**/dist/
+**/out/
+
+### Logs directory ###
+**/logs/
+!**/logs/.gitkeep
+
+### Kubernetes manifests (если есть) ###
+k8s/
+*.k8s.yaml
+*.k8s.yml
+
+### Helm charts ###
+charts/
+*.tgz
+
+### Minikube ###
+.minikube/
+
+### Проектные исключения ###
+src/main/resources/db/changelog/.gitkeep
+src/main/resources/application-test.yml
+src/test/java/stackover/resource/service/service/impl/QuestionServiceImplTest.java
+
+### Текстовые файлы (если не нужны) ###
+*.txt
+*.md
+!README.md
+!CHANGELOG.md
+!CONTRIBUTING.md
+!LICENSE
+
+### Результаты тестов ###
+test-output/
+jacoco.exec
+*.test
+*.results
+
+### Прочее ###
+.history/
+.idea_modules/
+*.iml.bak
+*.ipr.bak
+*.iws.bak

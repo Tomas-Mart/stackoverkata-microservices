@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: stackover-auth-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8180
+      protocol: TCP
+  selector:
+    app: auth-service

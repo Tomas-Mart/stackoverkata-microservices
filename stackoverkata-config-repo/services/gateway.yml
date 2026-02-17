@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: auth-service
+          uri: lb://stackover-auth-service
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: authService
+                fallbackUri: forward:/fallback/auth
+        - id: profile-service
+          uri: lb://stackover-profile-service
+          predicates:
+            - Path=/api/profile/**
+
+management:
+  endpoint:
+    health:
+      show-details: always

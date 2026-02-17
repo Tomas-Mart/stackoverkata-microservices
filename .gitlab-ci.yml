@@ -1,0 +1,341 @@
+# stackoverkata-microservices/.gitlab-ci.yml
+
+stages:
+  - build
+  - test
+  - package
+  - deploy
+
+variables:
+  # Общие переменные
+  DOCKER_REGISTRY: ${CI_REGISTRY}
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+
+  # Переменные для тестов
+  TEST_DB_NAME: "test-db"
+  TEST_DB_USER: "test-user"
+  TEST_DB_PASSWORD: "test-password"
+  TEST_R2DBC_URL: "r2dbc:postgresql://postgres:5432/test-db"
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .m2/repository/
+  policy: pull-push
+
+# ========== ШАБЛОНЫ ДЛЯ ПЕРЕИСПОЛЬЗОВАНИЯ ==========
+.common-template: &common-template
+  image: docker:27
+  services:
+    - docker:27-dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - apk add --no-cache maven openjdk17 curl postgresql-client
+
+.java-build: &java-build
+  stage: build
+  script:
+    - cd $SERVICE_PATH
+    - mvn compile
+  artifacts:
+    paths:
+      - $SERVICE_PATH/target/
+    expire_in: 1 hour
+
+.java-test: &java-test
+  stage: test
+  services:
+    - name: postgres:14
+      alias: postgres
+      variables:
+        POSTGRES_DB: ${TEST_DB_NAME}
+        POSTGRES_USER: ${TEST_DB_USER}
+        POSTGRES_PASSWORD: ${TEST_DB_PASSWORD}
+    - name: docker:dind
+      alias: docker
+  script:
+    - cd $SERVICE_PATH
+    - timeout 60s bash -c "until pg_isready -h postgres -U ${TEST_DB_USER} -d ${TEST_DB_NAME}; do sleep 2; done"
+    - mvn clean test -B
+      -Dspring.profiles.active=test
+      -Dspring.datasource.url=jdbc:postgresql://postgres:5432/${TEST_DB_NAME}
+      -Dspring.datasource.username=${TEST_DB_USER}
+      -Dspring.datasource.password=${TEST_DB_PASSWORD}
+      -Dspring.r2dbc.url=${TEST_R2DBC_URL}
+      -Dspring.r2dbc.username=${TEST_DB_USER}
+      -Dspring.r2dbc.password=${TEST_DB_PASSWORD}
+      -Dspring.jpa.hibernate.ddl-auto=create-drop
+      -Dspring.liquibase.enabled=false
+      -Dspring.cloud.config.enabled=false
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - $SERVICE_PATH/target/surefire-reports/TEST-*.xml
+    paths:
+      - $SERVICE_PATH/target/surefire-reports/
+
+.docker-package: &docker-package
+  stage: package
+  script:
+    - cd $SERVICE_PATH
+    - docker build -t $DOCKER_REGISTRY/$CI_PROJECT_PATH/$SERVICE_NAME:$CI_COMMIT_SHORT_SHA .
+    - docker tag $DOCKER_REGISTRY/$CI_PROJECT_PATH/$SERVICE_NAME:$CI_COMMIT_SHORT_SHA $DOCKER_REGISTRY/$CI_PROJECT_PATH/$SERVICE_NAME:latest
+    - docker push $DOCKER_REGISTRY/$CI_PROJECT_PATH/$SERVICE_NAME:$CI_COMMIT_SHORT_SHA
+    - docker push $DOCKER_REGISTRY/$CI_PROJECT_PATH/$SERVICE_NAME:latest
+  needs: [ "test-$SERVICE_NAME" ]
+
+# ========== ПРАВИЛА ЗАПУСКА ==========
+.check-changes: &check-changes
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - $SERVICE_PATH/**/*
+    - if: '$CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master"'
+      changes:
+        - $SERVICE_PATH/**/*
+    - if: '$CI_COMMIT_TAG'
+      changes:
+        - $SERVICE_PATH/**/*
+
+# ========== EUREKA SERVER ==========
+build-eureka-server:
+  <<: *java-build
+  <<: *check-changes
+  variables:
+    SERVICE_PATH: stackoverkata-eureka-server
+    SERVICE_NAME: eureka-server
+
+test-eureka-server:
+  <<: *java-test
+  <<: *check-changes
+  variables:
+    SERVICE_PATH: stackoverkata-eureka-server
+    SERVICE_NAME: eureka-server
+  needs: [ "build-eureka-server" ]
+
+package-eureka-server:
+  <<: *docker-package
+  <<: *check-changes
+  variables:
+    SERVICE_PATH: stackoverkata-eureka-server
+    SERVICE_NAME: eureka-server
+  needs: [ "test-eureka-server" ]
+
+# ========== AUTH SERVICE ==========
+build-auth-service:
+  <<: *java-build
+  <<: *check-changes
+  variables:
+    SERVICE_PATH: stackoverkata-auth-service
+    SERVICE_NAME: auth-service
+
+test-auth-service:
+  <<: *java-test
+  <<: *check-changes
+  variables:
+    SERVICE_PATH: stackoverkata-auth-service
+    SERVICE_NAME: auth-service
+  needs: [ "build-auth-service" ]
+
+package-auth-service:
+  <<: *docker-package
+  <<: *check-changes
+  variables:
+    SERVICE_PATH: stackoverkata-auth-service
+    SERVICE_NAME: auth-service
+  needs: [ "test-auth-service" ]
+
+# ========== PROFILE SERVICE ==========
+build-profile-service:
+  <<: *java-build
+  <<: *check-changes
+  variables:
+    SERVICE_PATH: stackoverkata-profile-service
+    SERVICE_NAME: profile-service
+
+test-profile-service:
+  <<: *java-test
+  <<: *check-changes
+  variables:
+    SERVICE_PATH: stackoverkata-profile-service
+    SERVICE_NAME: profile-service
+  needs: [ "build-profile-service" ]
+
+package-profile-service:
+  <<: *docker-package
+  <<: *check-changes
+  variables:
+    SERVICE_PATH: stackoverkata-profile-service
+    SERVICE_NAME: profile-service
+  needs: [ "test-profile-service" ]
+
+# ========== RESOURCE SERVICE ==========
+build-resource-service:
+  <<: *java-build
+  <<: *check-changes
+  variables:
+    SERVICE_PATH: stackoverkata-resource-service
+    SERVICE_NAME: resource-service
+
+test-resource-service:
+  <<: *java-test
+  <<: *check-changes
+  variables:
+    SERVICE_PATH: stackoverkata-resource-service
+    SERVICE_NAME: resource-service
+  needs: [ "build-resource-service" ]
+
+package-resource-service:
+  <<: *docker-package
+  <<: *check-changes
+  variables:
+    SERVICE_PATH: stackoverkata-resource-service
+    SERVICE_NAME: resource-service
+  needs: [ "test-resource-service" ]
+
+# ========== CONFIG SERVICE ==========
+build-config-service:
+  <<: *java-build
+  <<: *check-changes
+  variables:
+    SERVICE_PATH: stackoverkata-cloud-config-service
+    SERVICE_NAME: config-service
+
+test-config-service:
+  <<: *java-test
+  <<: *check-changes
+  variables:
+    SERVICE_PATH: stackoverkata-cloud-config-service
+    SERVICE_NAME: config-service
+  needs: [ "build-config-service" ]
+
+package-config-service:
+  <<: *docker-package
+  <<: *check-changes
+  variables:
+    SERVICE_PATH: stackoverkata-cloud-config-service
+    SERVICE_NAME: config-service
+  needs: [ "test-config-service" ]
+
+# ========== EMAIL SERVICE ==========
+build-email-service:
+  <<: *java-build
+  <<: *check-changes
+  variables:
+    SERVICE_PATH: stackoverkata-email-service
+    SERVICE_NAME: email-service
+
+test-email-service:
+  <<: *java-test
+  <<: *check-changes
+  variables:
+    SERVICE_PATH: stackoverkata-email-service
+    SERVICE_NAME: email-service
+  needs: [ "build-email-service" ]
+
+package-email-service:
+  <<: *docker-package
+  <<: *check-changes
+  variables:
+    SERVICE_PATH: stackoverkata-email-service
+    SERVICE_NAME: email-service
+  needs: [ "test-email-service" ]
+
+# ========== GATEWAY SERVICE ==========
+build-gateway:
+  <<: *java-build
+  <<: *check-changes
+  variables:
+    SERVICE_PATH: stackoverkata-gateway
+    SERVICE_NAME: gateway
+
+test-gateway:
+  <<: *java-test
+  <<: *check-changes
+  variables:
+    SERVICE_PATH: stackoverkata-gateway
+    SERVICE_NAME: gateway
+  needs: [ "build-gateway" ]
+
+package-gateway:
+  <<: *docker-package
+  <<: *check-changes
+  variables:
+    SERVICE_PATH: stackoverkata-gateway
+    SERVICE_NAME: gateway
+  needs: [ "test-gateway" ]
+
+# ========== WEB CLIENT ==========
+build-web-client:
+  stage: build
+  image: node:18
+  <<: *check-changes
+  variables:
+    SERVICE_PATH: stackover-web-client
+  script:
+    - cd $SERVICE_PATH
+    - npm ci
+  artifacts:
+    paths:
+      - $SERVICE_PATH/node_modules/
+      - $SERVICE_PATH/dist/
+    expire_in: 1 hour
+
+test-web-client:
+  stage: test
+  image: node:18
+  <<: *check-changes
+  variables:
+    SERVICE_PATH: stackover-web-client
+  script:
+    - cd $SERVICE_PATH
+    - npm run test
+  needs: [ "build-web-client" ]
+
+package-web-client:
+  stage: package
+  image: docker:27
+  services:
+    - docker:27-dind
+  <<: *check-changes
+  variables:
+    SERVICE_PATH: stackover-web-client
+    SERVICE_NAME: web-client
+  script:
+    - cd $SERVICE_PATH
+    - docker build -t $DOCKER_REGISTRY/$CI_PROJECT_PATH/$SERVICE_NAME:$CI_COMMIT_SHORT_SHA .
+    - docker tag $DOCKER_REGISTRY/$CI_PROJECT_PATH/$SERVICE_NAME:$CI_COMMIT_SHORT_SHA $DOCKER_REGISTRY/$CI_PROJECT_PATH/$SERVICE_NAME:latest
+    - docker push $DOCKER_REGISTRY/$CI_PROJECT_PATH/$SERVICE_NAME:$CI_COMMIT_SHORT_SHA
+    - docker push $DOCKER_REGISTRY/$CI_PROJECT_PATH/$SERVICE_NAME:latest
+  needs: [ "test-web-client" ]
+
+# ========== ДЕПЛОЙ ВСЕХ СЕРВИСОВ (ТОЛЬКО В MAIN/MASTER) ==========
+deploy-all:
+  stage: deploy
+  image: docker:27
+  services:
+    - docker:27-dind
+  script:
+    - apk add --no-cache docker-compose
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker-compose pull
+    - docker-compose up -d --remove-orphans
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master"'
+      when: manual
+      allow_failure: false
+  environment:
+    name: production
+    url: https://stackoverkata.example.com
+  needs:
+    - package-eureka-server
+    - package-auth-service
+    - package-profile-service
+    - package-resource-service
+    - package-config-service
+    - package-email-service
+    - package-gateway
+    - package-web-client

@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: stackoverkata-eureka-server-internal
+  namespace: default
+  labels:
+    helm.sh/chart: stackoverkata-eureka-server-0.1.0
+    app.kubernetes.io/name: stackoverkata-eureka-server
+    app.kubernetes.io/instance: stackoverkata-eureka-server
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  clusterIP: None
+  ports:
+    - port: 8761
+      targetPort: 8761
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: stackoverkata-eureka-server
+    app.kubernetes.io/instance: stackoverkata-eureka-server

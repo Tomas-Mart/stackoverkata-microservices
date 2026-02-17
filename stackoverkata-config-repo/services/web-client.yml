@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: stackover-web-client
+  thymeleaf:
+    cache: false
+
+frontend:
+  api:
+    base-url: http://api-gateway:8765/api
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

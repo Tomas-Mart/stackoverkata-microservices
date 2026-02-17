@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: stackoverkata-eureka-server
+  namespace: default
+  labels:
+    helm.sh/chart: stackoverkata-eureka-server-0.1.0
+    app.kubernetes.io/name: stackoverkata-eureka-server
+    app.kubernetes.io/instance: stackoverkata-eureka-server
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  serviceName: stackoverkata-eureka-server-internal
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: stackoverkata-eureka-server
+      app.kubernetes.io/instance: stackoverkata-eureka-server
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: stackoverkata-eureka-server
+        app.kubernetes.io/instance: stackoverkata-eureka-server
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role
+                    operator: In
+                    values: [ infra ]
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "infra"
+          effect: "NoSchedule"
+      containers:
+        - name: stackoverkata-eureka-server
+          image: "kseami/stackoverkata-eureka-server:1.0.0"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SERVER_PORT
+              value: "8761"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: EUREKA_INSTANCE_HOSTNAME
+              value: stackoverkata-eureka-server-$(POD_NAME).stackoverkata-eureka-server-internal
+            - name: EUREKA_SERVER_ENABLE_SELF_PRESERVATION
+              value: "false"
+            - name: EUREKA_SERVER_EVICTION_INTERVAL_TIMER_IN_MS
+              value: "3000"
+            - name: EUREKA_INSTANCE_LEASE_RENEWAL_INTERVAL_IN_SECONDS
+              value: "3"
+            - name: EUREKA_INSTANCE_LEASE_EXPIRATION_DURATION_IN_SECONDS
+              value: "10"
+            - name: SPRING_CONFIG_LOCATION
+              value: file:/app/config/application.yml
+          ports:
+            - name: http
+              containerPort: 8761
+          volumeMounts:
+            - name: config
+              mountPath: /app/config
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 200m
+              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8761
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8761
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+      volumes:
+        - name: config
+          configMap:
+            name: stackoverkata-eureka-server-config

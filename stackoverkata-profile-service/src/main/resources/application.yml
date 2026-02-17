@@ -1,0 +1,65 @@
+server:
+  port: 8182
+
+spring:
+  application:
+    name: stackover-profile-service
+  profiles:
+    active: test
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/stackover_profile_service
+    username: postgres
+    password: root
+    pool:
+      initial-size: 10
+      max-size: 20
+      max-idle-time: 30m
+  liquibase:
+    enabled: false
+    change-log: db/changelog/db.changelog-master.xml
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info,health
+
+  info:
+    env:
+      enabled: true
+
+feign:
+  circuitbreaker:
+    enabled: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      default:
+        register-health-indicator: true
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        permitted-number-of-calls-in-half-open-state: 3
+        wait-duration-in-open-state: 5000
+        failure-rate-threshold: 50
+        slow-call-rate-threshold: 100
+        slow-call-duration-threshold: 2000
+
+logging:
+  level:
+    root: INFO
+    org.springframework.data.r2dbc: DEBUG
+    org.springframework.web.reactive: DEBUG
+
+app:
+  jwt:
+    access-expiration-ms: 86400000
+    refresh-expiration-ms: 2592000000
+    secret: KX9pPmTqYtXuWrZv3w6z5C8F1J4H7N2B5E9R0DcGbQa
