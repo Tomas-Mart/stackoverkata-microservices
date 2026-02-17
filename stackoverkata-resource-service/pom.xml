@@ -10,11 +10,11 @@
         <version>1.0.0</version>
     </parent>
 
-    <groupId>stackover.resource.service</groupId>
+    <groupId>com.stackoverkata</groupId>
     <artifactId>stackover-resource-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>stackover-resource-service</name>
-    <description>stackover-resource-service</description>
+    <description>Resource management service for StackOverKata platform</description>
 
     <properties>
         <spring-cloud.version>2023.0.0</spring-cloud.version>
@@ -65,9 +65,8 @@
 
         <!-- Database -->
         <dependency>
-            <groupId>io.r2dbc</groupId>
+            <groupId>org.postgresql</groupId>
             <artifactId>r2dbc-postgresql</artifactId>
-            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>jakarta.persistence</groupId>

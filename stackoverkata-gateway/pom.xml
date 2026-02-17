@@ -10,9 +10,11 @@
         <version>1.0.0</version>
     </parent>
 
-    <groupId>stackover.gateway.service</groupId>
+    <groupId>com.stackoverkata</groupId>
     <artifactId>stackover-gateway</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
+    <name>stackover-gateway</name>
+    <description>API Gateway for StackOverKata microservices</description>
 
     <properties>
         <spring-cloud.version>2021.0.1</spring-cloud.version>

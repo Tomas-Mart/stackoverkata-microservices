@@ -53,7 +53,7 @@
         <amqp-client.version>5.20.0</amqp-client.version>
         <kubernetes-client.version>24.0.0</kubernetes-client.version>
         <mysql-connector.version>8.0.33</mysql-connector.version>
-        <r2dbc-postgresql.version>1.0.2.RELEASE</r2dbc-postgresql.version>
+        <r2dbc-postgresql.version>1.0.7.RELEASE</r2dbc-postgresql.version>
         <hibernate.version>6.3.1.Final</hibernate.version>
         <validation-api.version>2.0.1.Final</validation-api.version>
         <hibernate-validator.version>6.2.0.Final</hibernate-validator.version>
@@ -185,7 +185,7 @@
 
             <!-- R2DBC PostgreSQL -->
             <dependency>
-                <groupId>io.r2dbc</groupId>
+                <groupId>org.postgresql</groupId>
                 <artifactId>r2dbc-postgresql</artifactId>
                 <version>${r2dbc-postgresql.version}</version>
             </dependency>

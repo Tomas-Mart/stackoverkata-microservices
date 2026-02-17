@@ -1,29 +1,29 @@
+server:
+  port: ${CONFIG_SERVICE_PORT:8080}
+
 spring:
   application:
     name: stackover-config-service
   profiles:
-    active: kubernetes
+    active: ${SPRING_PROFILES_ACTIVE:dev}
   cloud:
     config:
       server:
         git:
-          uri: https://github.com/Tomas-Mart/stackoverkata-config-repo.git
+          uri: ${CONFIG_REPO_URI:https://github.com/Tomas-Mart/stackoverkata-config-repo.git}
           search-paths: services
           clone-on-start: true
-          default-label: main
+          default-label: ${CONFIG_REPO_BRANCH:main}
           timeout: 10
-    kubernetes:
-      discovery:
-        enabled: false
-      enabled: false
-
-server:
-  port: 8080
 
 eureka:
+  instance:
+    instance-id: ${spring.application.name}:${random.int}
+    prefer-ip-address: true
+    hostname: ${EUREKA_HOSTNAME:stackover-config-service}
   client:
     service-url:
-      defaultZone: http://stackoverkata-eureka-server.default.svc.cluster.local:8761/eureka/
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://eureka-server:8761/eureka/}
     register-with-eureka: true
     fetch-registry: true
     healthcheck:
@@ -33,14 +33,19 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,refresh
+        include: health,info,refresh,metrics,prometheus
   endpoint:
     health:
       show-details: always
       probes:
         enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
 
 logging:
   level:
+    root: ${LOG_LEVEL:INFO}
     org.springframework.cloud.config.server: DEBUG
     org.eclipse.jgit: DEBUG

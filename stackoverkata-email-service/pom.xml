@@ -10,9 +10,11 @@
         <version>1.0.0</version>
     </parent>
 
-    <groupId>stackover.email.service</groupId>
+    <groupId>com.stackoverkata</groupId>
     <artifactId>stackover-email-service</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
+    <name>stackover-email-service</name>
+    <description>Email notification service for StackOverKata platform</description>
 
     <properties>
         <spring-cloud.version>2021.0.1</spring-cloud.version>
