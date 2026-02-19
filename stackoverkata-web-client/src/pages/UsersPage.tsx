@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 import {
     Box,
     Typography,
@@ -11,15 +11,30 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import {useQuery} from 'react-query';
 import {Link} from 'react-router-dom';
-import {usersService} from '../services/users';
+import {usersService, UsersResponse} from '../services/users';
+import {User} from '../types/user';
 
 export function UsersPage() {
     const [search, setSearch] = useState('');
 
-    const {data: users, isLoading} = useQuery(
+    const {data, isLoading} = useQuery<UsersResponse>(
         ['users', search],
         () => usersService.getUsers(search)
     );
+
+    const handleSearchChange = (event: any) => {
+        setSearch(event.target.value);
+    };
+
+    if (isLoading) {
+        return (
+            <Box sx={{display: 'flex', justifyContent: 'center', mt: 4}}>
+                <Typography>Загрузка пользователей...</Typography>
+            </Box>
+        );
+    }
+
+    const users = data?.items || [];
 
     return (
         <Box>
@@ -31,7 +46,7 @@ export function UsersPage() {
                 fullWidth
                 placeholder="Поиск пользователей..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={handleSearchChange}
                 sx={{mb: 3}}
                 InputProps={{
                     startAdornment: (
@@ -42,11 +57,13 @@ export function UsersPage() {
                 }}
             />
 
-            {isLoading ? (
-                <Typography>Загрузка...</Typography>
+            {users.length === 0 ? (
+                <Typography variant="body1" color="text.secondary" sx={{textAlign: 'center', mt: 4}}>
+                    Пользователи не найдены
+                </Typography>
             ) : (
                 <Grid container spacing={2}>
-                    {users?.map((user) => (
+                    {users.map((user: User) => (
                         <Grid item xs={12} sm={6} md={4} key={user.id}>
                             <Paper
                                 sx={{

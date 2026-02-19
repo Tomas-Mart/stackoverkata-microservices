@@ -1,6 +1,7 @@
 export interface User {
     id: number;
     accountId: number;
+    username: string;
     email: string;
     fullName: string;
     linkPhoto: string;
@@ -9,6 +10,7 @@ export interface User {
     registrationDate: string;
     lastVisit: string;
     isEnabled: boolean;
+    createdAt: string;
 }
 
 export interface UserBadge {

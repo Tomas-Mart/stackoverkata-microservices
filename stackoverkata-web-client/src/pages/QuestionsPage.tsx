@@ -33,7 +33,7 @@ export function QuestionsPage() {
                     <Pagination
                         count={data.totalPages}
                         page={page}
-                        onChange={(_, value) => setPage(value)}
+                        onChange={(_: React.ChangeEvent<unknown>, value: number) => setPage(value)}
                         color="primary"
                     />
                 </Box>

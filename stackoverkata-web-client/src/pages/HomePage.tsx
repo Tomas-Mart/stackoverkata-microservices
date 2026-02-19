@@ -12,13 +12,17 @@ export function HomePage() {
     );
 
     return (
-        <Container maxWidth="lg" sx={{py: 4}}>
-            {/* Герой-секция */}
+        // Container - общая ширина страницы
+        <Container maxWidth="lg" sx={{py: 1}}>
+            {/* ===== ГЕРОЙ-СЕКЦИЯ (ОРАНЖЕВАЯ ПАНЕЛЬ) ===== */}
             <Paper
                 elevation={3}
                 sx={{
-                    p: 4,
-                    mb: 4,
+                    p: 6,                    // Внутренние отступы - УВЕЛИЧИТЬ ВЫСОТУ
+                    mb: 3,                    // Отступ снизу - УМЕНЬШИТЬ
+                    ml: 'auto',                // Сдвиг вправо
+                    mr: 0,                     // Ноль отступа справа
+                    width: '92%',               // Ширина панели - 92%
                     background: 'linear-gradient(135deg, #f48024 0%, #f9a84d 100%)',
                     color: 'white',
                     borderRadius: 2,
@@ -28,7 +32,7 @@ export function HomePage() {
                 <Typography variant="h3" gutterBottom fontWeight="bold">
                     StackOverKata
                 </Typography>
-                <Typography variant="h6" sx={{mb: 3, opacity: 0.95}}>
+                <Typography variant="h6" sx={{mb: 4, opacity: 0.95}}>
                     Сообщество разработчиков, готовых помочь друг другу
                 </Typography>
                 <Button
@@ -47,10 +51,12 @@ export function HomePage() {
                 </Button>
             </Paper>
 
-            <Grid container spacing={4}>
-                {/* Основной контент - вопросы */}
-                <Grid item xs={12} md={8}>
-                    <Paper sx={{p: 3}}>
+            {/* ===== ОСНОВНОЙ ГРИД С ДВУМЯ КОЛОНКАМИ ===== */}
+            <Grid container spacing={3} sx={{mt: 1}}>
+
+                {/* ===== ЛЕВАЯ КОЛОНКА - ВОПРОСЫ ===== */}
+                <Grid item xs={12} md={7.8} sx={{ml: 'auto', mr: 0}}>
+                    <Paper sx={{p: 3, minHeight: '320px'}}>  {/* minHeight - ВЫСОТА ПАНЕЛИ ВОПРОСОВ */}
                         <Typography variant="h5" gutterBottom fontWeight="medium">
                             Последние вопросы
                         </Typography>
@@ -58,11 +64,12 @@ export function HomePage() {
                     </Paper>
                 </Grid>
 
-                {/* Боковая панель */}
-                <Grid item xs={12} md={4}>
+                {/* ===== ПРАВАЯ КОЛОНКА - БОКОВАЯ ПАНЕЛЬ ===== */}
+                <Grid item xs={12} md={3.2}>  {/* УЖЕ, ЧЕМ БЫЛО (md=3.2 вместо 3.8) */}
                     <Stack spacing={3}>
+
                         {/* Карточка с тегами */}
-                        <Paper sx={{p: 3}}>
+                        <Paper sx={{p: 3, minHeight: '150px'}}>  {/* minHeight - ВЫСОТА ПАНЕЛИ ТЕГОВ */}
                             <Typography variant="h6" gutterBottom fontWeight="medium">
                                 Популярные теги
                             </Typography>
@@ -87,7 +94,11 @@ export function HomePage() {
                         </Paper>
 
                         {/* Карточка с подпиской */}
-                        <Paper sx={{p: 3, bgcolor: '#f8f9f9'}}>
+                        <Paper sx={{
+                            p: 3,
+                            bgcolor: '#f8f9f9',
+                            minHeight: '150px'
+                        }}>  {/* minHeight - ВЫСОТА ПАНЕЛИ ПОДПИСКИ */}
                             <Typography variant="h6" gutterBottom fontWeight="medium">
                                 Подпишитесь на рассылку
                             </Typography>
@@ -113,7 +124,7 @@ export function HomePage() {
                 </Grid>
             </Grid>
 
-            {/* Футер */}
+            {/* ===== ФУТЕР ===== */}
             <Box
                 component="footer"
                 sx={{

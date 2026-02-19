@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 import {
     Box,
     Paper,
@@ -32,8 +32,8 @@ export function RegisterPage() {
         }
     );
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
         setError('');
 
         if (password !== confirmPassword) {
@@ -42,6 +42,22 @@ export function RegisterPage() {
         }
 
         mutation.mutate();
+    };
+
+    const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setUsername(event.target.value);
+    };
+
+    const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setEmail(event.target.value);
+    };
+
+    const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setPassword(event.target.value);
+    };
+
+    const handleConfirmPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setConfirmPassword(event.target.value);
     };
 
     return (
@@ -62,7 +78,7 @@ export function RegisterPage() {
                         fullWidth
                         label="Имя пользователя"
                         value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        onChange={handleUsernameChange}
                         margin="normal"
                         required
                     />
@@ -71,7 +87,7 @@ export function RegisterPage() {
                         label="Email"
                         type="email"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={handleEmailChange}
                         margin="normal"
                         required
                     />
@@ -80,7 +96,7 @@ export function RegisterPage() {
                         label="Пароль"
                         type="password"
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={handlePasswordChange}
                         margin="normal"
                         required
                     />
@@ -89,7 +105,7 @@ export function RegisterPage() {
                         label="Подтверждение пароля"
                         type="password"
                         value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        onChange={handleConfirmPasswordChange}
                         margin="normal"
                         required
                     />

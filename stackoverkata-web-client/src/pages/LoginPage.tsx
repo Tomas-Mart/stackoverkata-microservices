@@ -1,4 +1,4 @@
-import {useState, ChangeEvent} from 'react';
+import React, {useState} from 'react';
 import {
     Box,
     Paper,
@@ -30,16 +30,19 @@ export function LoginPage() {
         }
     );
 
-    const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setEmail(e.target.value);
+    // @ts-ignore
+    const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setEmail(event.target.value);
     };
 
-    const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setPassword(e.target.value);
+    // @ts-ignore
+    const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setPassword(event.target.value);
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    // @ts-ignore
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
         setError('');
         mutation.mutate();
     };

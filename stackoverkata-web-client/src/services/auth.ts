@@ -1,12 +1,5 @@
-import { apiClient } from './api';
-
-export interface User {
-    id: string;
-    username: string;
-    email: string;
-    reputation: number;
-    createdAt: string;
-}
+import {apiClient} from './api';
+import {User} from '../types/user';
 
 export interface LoginRequest {
     email: string;
@@ -19,27 +12,32 @@ export interface RegisterRequest {
     password: string;
 }
 
+export interface AuthResponse {
+    token: string;
+    user: User;
+}
+
 export const authService = {
-    async login(data: LoginRequest) {
-        const response = await apiClient.post('/auth/login', data);
-        const { token, user } = response.data;
+    async login(data: LoginRequest): Promise<AuthResponse> {
+        const response = await apiClient.post<AuthResponse>('/auth/login', data);
+        const {token} = response.data;
         localStorage.setItem('token', token);
-        return user;
+        return response.data;
     },
 
-    async register(data: RegisterRequest) {
-        const response = await apiClient.post('/auth/register', data);
-        const { token, user } = response.data;
+    async register(data: RegisterRequest): Promise<AuthResponse> {
+        const response = await apiClient.post<AuthResponse>('/auth/register', data);
+        const {token} = response.data;
         localStorage.setItem('token', token);
-        return user;
+        return response.data;
     },
 
-    async getCurrentUser() {
+    async getCurrentUser(): Promise<User> {
         const response = await apiClient.get<User>('/auth/me');
         return response.data;
     },
 
-    logout() {
+    logout(): void {
         localStorage.removeItem('token');
         window.location.href = '/login';
     },

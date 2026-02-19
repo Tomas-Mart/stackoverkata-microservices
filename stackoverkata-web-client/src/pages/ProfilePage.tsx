@@ -9,20 +9,47 @@ import {
 } from '@mui/material';
 import {useParams} from 'react-router-dom';
 import {useQuery} from 'react-query';
-import {usersService} from '../services/users';
+import {usersService} from '../services/users'; // Проверьте, что файл users.ts существует
 import {format} from 'date-fns';
 import {ru} from 'date-fns/locale';
 
-export function ProfilePage() {
-    const {id} = useParams<{ id: string }>();
+// Интерфейс для пользователя (если не импортируется из usersService)
+interface User {
+    id: number;
+    fullName?: string;
+    email: string;
+    linkPhoto?: string;
+    city?: string;
+    reputation: number;
+    registrationDate: string;
+    lastVisit: string;
+}
 
-    const {data: user, isLoading} = useQuery(
+export function ProfilePage() {
+    const {id} = useParams;
+
+    const {data: user, isLoading} = useQuery<User>(
         ['user', id],
-        () => usersService.getUser(id!)
+        () => usersService.getUser(id!),
+        {
+            enabled: !!id, // Запрос только если есть id
+        }
     );
 
-    if (isLoading || !user) {
-        return <Typography>Загрузка...</Typography>;
+    if (isLoading) {
+        return (
+            <Box sx={{display: 'flex', justifyContent: 'center', mt: 4}}>
+                <Typography>Загрузка...</Typography>
+            </Box>
+        );
+    }
+
+    if (!user) {
+        return (
+            <Box sx={{display: 'flex', justifyContent: 'center', mt: 4}}>
+                <Typography>Пользователь не найден</Typography>
+            </Box>
+        );
     }
 
     return (
@@ -69,7 +96,9 @@ export function ProfilePage() {
                                     Дата регистрации
                                 </Typography>
                                 <Typography variant="body1">
-                                    {format(new Date(user.registrationDate), 'dd MMMM yyyy', {locale: ru})}
+                                    {user.registrationDate ?
+                                        format(new Date(user.registrationDate), 'dd MMMM yyyy', {locale: ru}) :
+                                        'Не указана'}
                                 </Typography>
                             </Grid>
                             <Grid item xs={4}>
@@ -77,7 +106,9 @@ export function ProfilePage() {
                                     Последний визит
                                 </Typography>
                                 <Typography variant="body1">
-                                    {format(new Date(user.lastVisit), 'dd MMMM yyyy', {locale: ru})}
+                                    {user.lastVisit ?
+                                        format(new Date(user.lastVisit), 'dd MMMM yyyy', {locale: ru}) :
+                                        'Не указан'}
                                 </Typography>
                             </Grid>
                         </Grid>
