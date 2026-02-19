@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Map;
+
 public record EmailRequest(
 
         @NotBlank(message = "Email получателя не может быть пустым")
@@ -24,7 +26,7 @@ public record EmailRequest(
 
         String templateName,
 
-        Object templateData
+        Map<String, Object> templateData  // ✅ Изменено с Object на Map<String, Object>
 ) {
 
     // Статические фабричные методы (заменяют Builder)
@@ -36,17 +38,17 @@ public record EmailRequest(
         return new EmailRequest(to, subject, htmlContent, true, null, null);
     }
 
-    public static EmailRequest template(String to, String templateName, Object templateData) {
+    public static EmailRequest template(String to, String templateName, Map<String, Object> templateData) {
         return new EmailRequest(to, "Template Email", null, true, templateName, templateData);
     }
 
-    // Компактный конструктор для валидации (если нужна дополнительная логика)
+    // Компактный конструктор для валидации
     public EmailRequest {
-        // Можно добавить кастомную валидацию
+        // Кастомная валидация
         if (isHtml != null && isHtml && templateName != null && text != null) {
             throw new IllegalArgumentException("HTML email должен содержать либо templateName, либо text, но не оба");
         }
     }
 
-    // Методы доступа автоматически создаются: to(), subject(), text(), etc.
+    // Геттеры автоматически создаются: to(), subject(), text(), isHtml(), templateName(), templateData()
 }

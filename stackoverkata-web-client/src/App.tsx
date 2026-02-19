@@ -1,11 +1,11 @@
-import { useEffect } from 'react';
-import { QueryClient, QueryClientProvider } from 'react-query';
-import { BrowserRouter } from 'react-router-dom';
-import { CssBaseline, ThemeProvider } from '@mui/material';
+import {useEffect} from 'react';
+import {QueryClient, QueryClientProvider} from 'react-query';
+import {BrowserRouter} from 'react-router-dom';
+import {CssBaseline, ThemeProvider} from '@mui/material';
 import theme from './styles/theme';
 import AppRoutes from './routes';
-import { authIntegration } from './api/AuthIntegration';
-import { ServiceStatusProvider } from './features/service-registry/ServiceStatusContext';
+import {authIntegration} from './api/AuthIntegration';
+import {ServiceStatusProvider} from './features/service-registry/ServiceStatusContext';
 
 const queryClient = new QueryClient();
 
@@ -17,10 +17,10 @@ function App() {
     return (
         <QueryClientProvider client={queryClient}>
             <ThemeProvider theme={theme}>
-                <CssBaseline />
+                <CssBaseline/>
                 <BrowserRouter>
                     <ServiceStatusProvider>
-                        <AppRoutes />
+                        <AppRoutes/>
                     </ServiceStatusProvider>
                 </BrowserRouter>
             </ThemeProvider>
