@@ -1,5 +1,5 @@
 server:
-  port: ${RESOURCE_SERVICE_PORT:8183}
+  port: ${RESOURCE_SERVICE_PORT:8181}
 
 spring:
   application:
@@ -60,7 +60,6 @@ management:
   metrics:
     export:
       prometheus:
-        enabled: true
 
 app:
   jwt:

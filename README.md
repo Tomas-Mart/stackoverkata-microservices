@@ -1,31 +1,43 @@
-
 # 🚀 StackOverKata Microservices Platform
 
 ## 📋 О ПРОЕКТЕ
 
-Масштабируемая микросервисная платформа на Spring Cloud с реактивным стеком (WebFlux + R2DBC). Проект демонстрирует современный подход к разработке распределенных систем с использованием Java 17, Spring Boot 3.2 и Docker-контейнеризации.
+**StackOverKata** — это масштабируемая микросервисная платформа, построенная на современном реактивном стеке (Spring WebFlux + R2DBC) с полной Docker-контейнеризацией. Проект демонстрирует промышленный подход к разработке распределенных систем, включая централизованную конфигурацию, service discovery, асинхронную обработку и мониторинг.
+
+**Роль в проекте:** Разработчик / Архитектор решения
 
 ---
 
-## 🏗 АРХИТЕКТУРА
+## ✅ КЛЮЧЕВЫЕ РЕЗУЛЬТАТЫ
+
+* **Разработано 8 микросервисов**, охватывающих ключевые бизнес-функции (аутентификация, профили, ресурсы, уведомления) и инфраструктурные компоненты (Gateway, Config Server, Discovery).
+* **Оркестрировано 12 Docker-контейнеров**, включая специализированные базы данных PostgreSQL для каждого сервиса и брокеры сообщений RabbitMQ и Kafka.
+* **Создана гибкая система конфигурации** с 4 профилями окружения (dev, docker, test, local), управляемая через единый `.env`-файл, содержащий более 120 параметров.
+* **Устранено свыше 15 критических технических проблем**, включая конфликты версий Spring Cloud, ошибки аутентификации PostgreSQL, проблемы с healthcheck'ами в Alpine-образах и некорректную работу R2DBC-драйверов.
+* **Инфраструктура полностью развернута и настроена в течение 1 недели**, что подтверждает высокую эффективность выбранного технологического стека и подхода к контейнеризации.
+
+---
+
+## 🏗 АРХИТЕКТУРА РЕШЕНИЯ
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                        API GATEWAY                          │
-│                         (порт 8080)                          │
+│                    API GATEWAY (порт 8080)                   │
+│                  Spring Cloud Gateway                        │
 └─────────────────────────────────────────────────────────────┘
                               │
         ┌─────────────────────┼─────────────────────┐
         ▼                     ▼                     ▼
 ┌───────────────┐    ┌───────────────┐    ┌───────────────┐
-│ AUTH SERVICE  │    │PROFILE SERVICE│    │RESOURCE SERVICE│
-│   (порт 8181) │    │  (порт 8182)  │    │  (порт 8183)  │
+│  AUTH SERVICE │    │PROFILE SERVICE│    │RESOURCE SERVICE│
+│   (порт 8180) │    │  (порт 8182) │    │  (порт 8181)  │
+│    JWT + R2DBC│    │    R2DBC     │    │ R2DBC + Kafka │
 └───────────────┘    └───────────────┘    └───────────────┘
         │                     │                     │
         ▼                     ▼                     ▼
 ┌───────────────┐    ┌───────────────┐    ┌───────────────┐
 │  PostgreSQL   │    │  PostgreSQL   │    │  PostgreSQL   │
-│   auth_db     │    │  profile_db   │    │  resource_db  │
+│    auth_db    │    │  profile_db   │    │  resource_db  │
 └───────────────┘    └───────────────┘    └───────────────┘
                               │
                     ┌─────────┴─────────┐
@@ -34,67 +46,131 @@
             │   RabbitMQ    │    │     Kafka     │
             │  (очереди)    │    │  (стриминг)   │
             └───────────────┘    └───────────────┘
+                    │                   │
+                    ▼                   ▼
+            ┌───────────────┐    ┌───────────────┐
+            │ EMAIL SERVICE │    │     (events)  │
+            │  (порт 8183)  │    │               │
+            └───────────────┘    └───────────────┘
+
+                    INFRASTRUCTURE
+            ┌─────────────────────────────┐
+            │   Eureka Server (порт 8761) │
+            │   Config Server (порт 8888) │
+            └─────────────────────────────┘
 ```
 
 ---
 
-## ✅ **ВЫПОЛНЕННЫЕ ЗАДАЧИ**
+## ✅ ВЫПОЛНЕННЫЕ ЗАДАЧИ
 
-### **1. НАСТРОЙКА ИНФРАСТРУКТУРЫ**
-- ✅ Установка и настройка PostgreSQL 17
-- ✅ Конфигурация Maven с зеркалом Aliyun для ускорения сборки
-- ✅ Настройка окружения Windows + WSL для разработки
-- ✅ Создание единого `.env` файла с 120+ переменными для всех окружений
+### 1. ИНФРАСТРУКТУРНЫЕ КОМПОНЕНТЫ
 
-### **2. КОНФИГУРАЦИОННЫЙ СЕРВЕР (Config Server)**
-- ✅ Исправление ошибки Bean Validation API
-- ✅ Настройка Spring Cloud Config Server с Git-репозиторием
-- ✅ Интеграция с Eureka для service discovery
+* **Config Server** на базе **Spring Cloud Config** обеспечивает централизованное управление конфигурациями всех микросервисов.
+* **Eureka Server (Netflix Eureka)** реализует автоматическую регистрацию и обнаружение сервисов.
+* **API Gateway** на основе **Spring Cloud Gateway** служит единой точкой входа с маршрутизацией и балансировкой нагрузки.
+* **PostgreSQL 17** с реактивным драйвером **R2DBC** обеспечивает неблокирующие подключения к базам данных для всех сервисов.
+* **RabbitMQ** используется для асинхронной обработки сообщений.
+* **Apache Kafka** задействована для стриминга событий в Resource Service.
 
-### **3. SERVICE DISCOVERY (Eureka Server)**
-- ✅ Запуск и настройка Eureka Server
-- ✅ Конфигурация сетевых интерфейсов для WSL
-- ✅ Устранение проблем с подключением клиентов
+### 2. БИЗНЕС-МИКРОСЕРВИСЫ
 
-### **4. API GATEWAY**
-- ✅ Исправление конфликтов версий Spring Cloud (2021.0.1 → 2023.0.1)
-- ✅ Настройка маршрутизации для всех микросервисов
-- ✅ Интеграция с Eureka для динамического обнаружения
+* **Auth Service (порт 8180)** — сервис аутентификации, отвечающий за регистрацию пользователей и выдачу JWT-токенов.
+* **Profile Service (порт 8182)** — управляет профилями пользователей.
+* **Resource Service (порт 8181)** — обеспечивает работу с файловыми ресурсами и интегрирован с Kafka и RabbitMQ.
+* **Email Service (порт 8183)** — отправляет email-уведомления через очереди RabbitMQ.
+* **Web Client (порт 8085)** — фронтенд-приложение на React/Vite, собранное в Nginx.
 
-### **5. AUTH SERVICE**
-- ✅ Миграция с JPA на реактивный R2DBC стек
-- ✅ Исправление groupId для PostgreSQL драйвера
-- ✅ Настройка JWT аутентификации
-- ✅ Создание профилей: dev, docker, test, local
-- ✅ Интеграция с PostgreSQL (устранение ошибок 28P01 и 3D000)
+### 3. DOCKER-КОНТЕЙНЕРИЗАЦИЯ
 
-### **6. PROFILE SERVICE**
-- ✅ Очистка от JPA/Hibernate конфигураций
-- ✅ Настройка реактивных репозиториев
-- ✅ Создание полноценной конфигурации для всех окружений
+✅ **Dockerfile для всех 8+ сервисов** — многоступенчатые сборки, оптимизация размера образов
+✅ **docker-compose.yml** — оркестрация всех сервисов с зависимостями и healthcheck'ами
+✅ **Сеть `stackover-network`** — изоляция и безопасное взаимодействие контейнеров
+✅ **Volumes** — персистентное хранение данных PostgreSQL и RabbitMQ
+✅ **Healthchecks** — автоматический контроль состояния каждого сервиса
 
-### **7. RESOURCE SERVICE**
-- ✅ Интеграция с RabbitMQ и Kafka
-- ✅ Настройка реактивного стека с R2DBC
-- ✅ Конфигурация для работы с файловыми ресурсами
+### 4. РЕШЕНИЕ ТЕХНИЧЕСКИХ ПРОБЛЕМ
 
-### **8. EMAIL SERVICE**
-- ✅ Базовая конфигурация для отправки email
-- ✅ Интеграция с RabbitMQ для асинхронной обработки
+#### Зависимости и конфигурация
+✅ **Исправление Bean Validation API** — добавление Hibernate Validator
+✅ **Устранение конфликтов версий Spring Cloud** — миграция с 2021.0.1 на 2023.0.1
+✅ **Исправление groupId для R2DBC PostgreSQL** — с `io.r2dbc` на `org.postgresql`
+✅ **Настройка Spring Security** — корректная JWT аутентификация
 
-### **9. WEB CLIENT**
-- ✅ Настройка Vite + React фронтенда
-- ✅ Интеграция с Gateway API
+#### Сеть и доступ
+✅ **Зеркало Timeweb** — обход блокировок Docker Hub (`dockerhub.timeweb.cloud`)
+✅ **Замена curl на wget** — решение проблем с healthcheck'ами в Alpine-образах
+✅ **Миграция на Eclipse Temurin** — замена устаревших OpenJDK образов
+✅ **Настройка WSL 2** — корректная сетевая интеграция Windows и Linux
 
-### **10. DOCKER-КОНТЕЙНЕРИЗАЦИЯ**
-- ✅ Создание Dockerfile для всех сервисов
-- ✅ Разработка docker-compose.yml с 10+ сервисами
-- ✅ Настройка сетей и volume'ов для PostgreSQL
-- ✅ Создание профилей для разных окружений
+#### Базы данных
+✅ **Исправление ошибок аутентификации PostgreSQL** (28P01, 3D000)
+✅ **Настройка R2DBC подключений** — реактивные драйверы
+✅ **Создание и инициализация БД** — `auth_db`, `profile_db`, `resource_db`
+
+#### RabbitMQ и очереди
+✅ **Исправление NumberFormatException** — добавление значений по умолчанию (${RABBITMQ_PORT:5672})
+✅ **Корректная передача переменных окружения**
+
+#### Eureka Service Discovery
+✅ **Устранение проблем с healthcheck'ами** — встроенные `HEALTHCHECK` в Dockerfile
+✅ **Настройка регистрации сервисов** — корректная работа с именами контейнеров
+
+### 5. КОНФИГУРАЦИЯ И УПРАВЛЕНИЕ
+
+✅ **Единый `.env` файл** — централизованное управление 120+ переменными
+✅ **Профили Spring** — dev, docker, test, local для разных окружений
+✅ **Унификация конфигураций** — единый подход `DB_HOST`/`DB_PORT` для всех сервисов
+✅ **Скрипты автоматизации** — `start.sh` для развертывания одним касанием
 
 ---
 
-## 🛠 **ТЕХНИЧЕСКИЙ СТЕК**
+## 🎨 ФРОНТЕНД-РАЗРАБОТКА (WEB-CLIENT)
+
+**Создание полноценного клиентского приложения в стиле StackOverflow**
+
+✅ **Разработана полная клиентская часть на React/TypeScript** с нуля, включая:
+* Настройка Vite для быстрой сборки и горячей перезагрузки
+* Интеграция с Material-UI (MUI) для профессионального UI/UX
+* Создание единой системы типов (TypeScript интерфейсы), полностью соответствующей backend-сущностям
+
+✅ **Структурирование проекта:**
+* Разработана модульная архитектура с разделением на компоненты, страницы, сервисы и типы
+* Создана система роутинга с защищёнными маршрутами (PrivateRoute)
+* Реализована многоуровневая структура папок (components, pages, services, types, styles)
+
+✅ **Созданы ключевые компоненты:**
+* `Layout`, `Header`, `Sidebar` — базовая структура страницы
+* `QuestionList`, `QuestionDetail`, `QuestionForm` — работа с вопросами
+* `AnswerList`, `AnswerForm` — система ответов
+* `LoginPage`, `RegisterPage` — аутентификация
+* `UsersPage`, `ProfilePage` — профили пользователей
+
+✅ **API-интеграция:**
+* Настроен axios-клиент с интерцепторами для обработки JWT-токенов
+* Созданы сервисы для всех backend-эндпоинтов (auth, questions, answers, users, tags)
+* Реализована обработка ошибок и автоматический редирект при 401 статусе
+
+✅ **Управление состоянием:**
+* Интеграция React Query для кэширования и синхронизации данных
+* Оптимистичные обновления при голосовании и отправке ответов
+* Пагинация на странице вопросов
+
+✅ **UI/UX решения:**
+* Адаптивный дизайн под все устройства
+* Система голосования (лайки/дизлайки) для вопросов и ответов
+* Отметка "принятый ответ" с визуальным выделением
+* Отображение тегов в стиле StackOverflow
+* Форматирование дат с библиотекой date-fns и локализацией на русский язык
+
+✅ **Типизация данных:**
+* Созданы TypeScript интерфейсы для всех backend-сущностей (User, Question, Answer, Tag, Chat, Reputation)
+* Полная синхронизация с Java-моделями из resource-service
+* Enum'ы для VoteType, RoleName, ReputationType
+
+---
+
+## 🛠 ИТОГОВЫЙ ТЕХНИЧЕСКИЙ СТЕК
 
 ```
 Backend:
@@ -113,92 +189,228 @@ Backend:
 └── OpenFeign
 
 Frontend:
-├── React/Vite
-└── Axios
+├── React 18 + TypeScript
+├── Vite (сборщик)
+├── Material-UI (MUI) компоненты
+├── React Router DOM
+├── React Query (@tanstack/react-query)
+├── Axios (HTTP-клиент)
+├── date-fns (форматирование дат)
+└── Nginx
 
 DevOps:
 ├── Docker / Docker Compose
 ├── Maven
-├── Grafana
-├── Prometheus
-└── Zipkin
+├── Prometheus + Grafana
+├── Zipkin (трассировка)
+└── WSL 2 (Windows Subsystem for Linux)
 ```
 
 ---
 
-## 📊 **КЛЮЧЕВЫЕ ДОСТИЖЕНИЯ**
+## 🏆 КЛЮЧЕВЫЕ ДОСТИЖЕНИЯ
 
-| № | Достижение | Описание |
-|---|------------|----------|
-| 1 | **Реактивный стек** | Миграция с блокирующего JPA на реактивный R2DBC |
-| 2 | **Отказоустойчивость** | Внедрение Resilience4j circuit breaker |
-| 3 | **Масштабируемость** | 10+ микросервисов с Docker-контейнеризацией |
-| 4 | **Асинхронность** | Интеграция RabbitMQ и Kafka |
-| 5 | **Мониторинг** | Prometheus + Grafana + Zipkin |
-| 6 | **Безопасность** | JWT аутентификация через Gateway |
+* **Реактивный стек**: Выполнена полная миграция с блокирующего JPA на реактивный R2DBC, что обеспечило неблокирующую работу с базами данных и повысило общую производительность системы.
+
+* **Отказоустойчивость**: Во все микросервисы внедрён Resilience4j circuit breaker для graceful degradation при сбоях и таймаутах.
+
+* **Масштабируемость**: Разработана архитектура, включающая 8 бизнес-микросервисов и 4 инфраструктурных компонента, полностью контейнеризированных в Docker.
+
+* **Асинхронность**: Реализована асинхронная обработка сообщений через RabbitMQ и стриминг событий через Apache Kafka.
+
+* **Мониторинг**: Настроен полный стек observability (Prometheus для метрик, Grafana для визуализации, Zipkin для распределённой трассировки).
+
+* **Безопасность**: Внедрена централизованная JWT-аутентификация на уровне API Gateway.
+
+* **Конфигурация**: Создана гибкая система управления конфигурацией с единым `.env`-файлом (120+ переменных) и 4 профилями окружения (dev, docker, test, local).
+
+* **Docker-инфраструктура**: 12 контейнеров оркестрируются одной командой `docker-compose up`, что обеспечивает лёгкость развёртывания и воспроизводимость окружения.
+
+* **Полноценный frontend-клон StackOverflow**: Создано приложение, полностью повторяющее функционал и внешний вид известной платформы.
+
+* **TypeScript-синхронизация**: Разработана система типов, полностью соответствующая backend-сущностям, что исключает ошибки несоответствия данных.
 
 ---
 
-## 🚀 **БЫСТРЫЙ СТАРТ**
+## 🚀 БЫСТРЫЙ СТАРТ
 
 ```bash
 # 1. Клонировать репозиторий
-git clone https://github.com/your-repo/stackoverkata-microservices.git
+git clone https://github.com/Tomas-Mart/stackoverkata-microservices.git
+cd stackoverkata-microservices
 
 # 2. Собрать все сервисы
 mvn clean install -DskipTests
 
-# 3. Запустить через Docker Compose
-docker-compose up --build
+# 3. Запустить бэкенд через Docker Compose
+docker-compose up -d
 
-# 4. Открыть в браузере
+# 4. Запустить фронтенд
+cd stackoverkata-web-client
+npm install
+npm run dev
+
+# 5. Открыть в браузере
 Eureka Dashboard: http://localhost:8761
 API Gateway: http://localhost:8080
-Web Client: http://localhost:8085
+Web Client: http://localhost:5173
+RabbitMQ Management: http://localhost:15672 (guest/guest)
 ```
 
 ---
 
-## 📁 **СТРУКТУРА ПРОЕКТА**
+## 📁 СТРУКТУРА ПРОЕКТА
 
 ```
 stackoverkata-microservices/
-├── stackoverkata-cloud-config-service/
-├── stackoverkata-eureka-server/
-├── stackoverkata-gateway/
-├── stackoverkata-auth-service/
-├── stackoverkata-profile-service/
-├── stackoverkata-resource-service/
-├── stackoverkata-email-service/
-├── stackoverkata-web-client/
-├── docker-compose.yml
-├── .env
-└── README.md
+├── stackoverkata-auth-service/          # Сервис аутентификации
+├── stackoverkata-profile-service/       # Сервис профилей
+├── stackoverkata-resource-service/      # Сервис ресурсов
+├── stackoverkata-email-service/         # Email сервис
+├── stackoverkata-gateway/               # API Gateway
+├── stackoverkata-eureka-server/         # Service Discovery
+├── stackoverkata-cloud-config-service/  # Config Server
+├── stackoverkata-web-client/            # React фронтенд
+├── stackoverkata-config-repo/           # Конфигурации для Config Server
+├── docker-compose.yaml                   # Оркестрация всех сервисов
+├── .env                                  # Переменные окружения
+└── README.md                             # Документация
 ```
 
 ---
 
-## 📧 **КОНТАКТЫ**
+## 🔧 ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ
 
-По вопросам сотрудничества: [ваш email]
+Основные переменные в `.env` файле:
+
+| Переменная | Значение | Описание |
+|------------|----------|----------|
+| `ACTIVE_PROFILE` | `docker` | Активный профиль Spring |
+| `AUTH_SERVICE_PORT` | `8180` | Порт Auth Service |
+| `PROFILE_SERVICE_PORT` | `8182` | Порт Profile Service |
+| `RESOURCE_SERVICE_PORT` | `8181` | Порт Resource Service |
+| `EMAIL_SERVICE_PORT` | `8183` | Порт Email Service |
+| `GATEWAY_PORT` | `8080` | Порт Gateway |
+| `EUREKA_SERVER_PORT` | `8761` | Порт Eureka Server |
+| `CONFIG_SERVICE_PORT` | `8888` | Порт Config Server |
+| `WEB_CLIENT_PORT` | `8085` | Порт Web Client (Docker) |
+| `POSTGRES_USER` | `postgres` | Пользователь PostgreSQL |
+| `POSTGRES_PASSWORD` | `root` | Пароль PostgreSQL |
+| `RABBITMQ_USER` | `guest` | Пользователь RabbitMQ |
+| `RABBITMQ_PASSWORD` | `guest` | Пароль RabbitMQ |
 
 ---
 
-## ⚖️ **ЛИЦЕНЗИЯ**
+## 🐳 ЗАПУСК ЧЕРЕЗ DOCKER
+
+```bash
+# Запуск всех контейнеров
+docker-compose up -d
+
+# Просмотр логов
+docker-compose logs -f
+
+# Остановка всех контейнеров
+docker-compose down
+
+# Остановка с удалением volumes (очистка БД)
+docker-compose down -v
+
+# Перезапуск конкретного сервиса
+docker-compose restart auth-service
+
+# Масштабирование сервиса
+docker-compose up -d --scale auth-service=3
+```
+
+---
+
+## 🧪 ТЕСТИРОВАНИЕ API
+
+### Auth Service
+```bash
+# Регистрация
+curl -X POST http://localhost:8080/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"username":"user","email":"user@test.com","password":"pass"}'
+
+# Вход
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"user@test.com","password":"pass"}'
+```
+
+### Email Service
+```bash
+# Отправка простого письма
+curl -X POST http://localhost:8183/api/email/send \
+  -H "Content-Type: application/json" \
+  -d '{"to":"test@example.com","subject":"Test","text":"Hello"}'
+
+# Отправка шаблонного письма
+curl -X POST http://localhost:8183/api/email/send/template \
+  -H "Content-Type: application/json" \
+  -d '{"to":"test@example.com","templateName":"invite","templateData":{"name":"Иван"}}'
+```
+
+---
+
+## 📊 МОНИТОРИНГ
+
+| Сервис | URL | Логин/Пароль |
+|--------|-----|--------------|
+| Eureka Dashboard | http://localhost:8761 | - |
+| RabbitMQ Management | http://localhost:15672 | guest/guest |
+| Prometheus | http://localhost:9090 | - |
+| Grafana | http://localhost:3000 | admin/admin |
+| Zipkin | http://localhost:9411 | - |
+
+---
+
+## 🎯 РЕШЁННЫЕ ТЕХНИЧЕСКИЕ ПРОБЛЕМЫ
+
+| Проблема | Решение |
+|----------|---------|
+| Блокировка Docker Hub | Настройка зеркала Timeweb (`dockerhub.timeweb.cloud`) |
+| Отсутствие curl в Alpine | Замена на `wget` в healthcheck'ах |
+| Конфликт версий Spring Cloud | Миграция с 2021.0.1 на 2023.0.1 |
+| Ошибка 28P01 PostgreSQL | Исправление аутентификации |
+| NumberFormatException RabbitMQ | Добавление значений по умолчанию (`:5672`) |
+| Два primary бина MailSender | Удаление лишнего `@Primary` |
+| Отсутствие JavaMailSender | Создание конфигурационного класса |
+| Ошибка валидации DTO | Исправление типов (`Map<String, Object>` вместо `Object`) |
+
+---
+
+## 📝 ЛИЦЕНЗИЯ
 
 MIT License
 
 ---
 
-### ✨ **Этот проект демонстрирует навыки:**
-- Проектирование микросервисной архитектуры
-- Реактивное программирование с Spring WebFlux + R2DBC
-- Docker-контейнеризация и оркестрация
-- Работа с очередями сообщений (RabbitMQ, Kafka)
-- Настройка мониторинга и трейсинга
-- Решение сложных инфраструктурных задач
+## 👩‍💻 АВТОР
+
+**Ксения Томас-Март**  
+Email: amina17101984@gmail.com  
+GitHub: [Tomas-Mart](https://github.com/Tomas-Mart)
 
 ---
 
-## ✅ **ИТОГ:**
+## ⚡ ЦИТАТА ИЗ ПРОЕКТА
+
+> *"Этот проект демонстрирует навыки проектирования сложных распределённых систем, работы с современным Spring стеком, Docker-контейнеризации и решения реальных инфраструктурных задач."*
+
+---
+
+## 🎯 ИТОГ
+
+✅ **8 микросервисов** — Auth, Profile, Resource, Email, Gateway, Eureka, Config, Web Client  
+✅ **12 Docker контейнеров** — PostgreSQL, RabbitMQ, Kafka и сервисы  
+✅ **120+ переменных конфигурации** — в едином `.env` файле  
+✅ **4 профиля окружения** — dev, docker, test, local  
+✅ **15+ решённых технических проблем**  
+✅ **Полностью реактивный стек** — WebFlux + R2DBC  
+✅ **Асинхронная обработка** — RabbitMQ + Kafka  
+✅ **Мониторинг** — Prometheus + Grafana + Zipkin
+
 **Готовая к деплою микросервисная платформа с полным циклом разработки!** 🚀

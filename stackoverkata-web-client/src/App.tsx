@@ -1,17 +1,29 @@
 import {useEffect} from 'react';
 import {QueryClient, QueryClientProvider} from 'react-query';
 import {BrowserRouter} from 'react-router-dom';
-import {CssBaseline, ThemeProvider} from '@mui/material';
-import theme from './styles/theme';
-import AppRoutes from './routes';
-import {authIntegration} from './api/AuthIntegration';
-import {ServiceStatusProvider} from './features/service-registry/ServiceStatusContext';
+import {ThemeProvider, CssBaseline} from '@mui/material';
+import {theme} from './styles/theme';
+import {AppRoutes} from './routes';
+import {authService} from './services/auth';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            refetchOnWindowFocus: false,
+            retry: 1,
+        },
+    },
+});
 
 function App() {
     useEffect(() => {
-        authIntegration.initialize();
+        // Проверка аутентификации при загрузке
+        const token = localStorage.getItem('token');
+        if (token) {
+            authService.getCurrentUser().catch(() => {
+                localStorage.removeItem('token');
+            });
+        }
     }, []);
 
     return (
@@ -19,9 +31,7 @@ function App() {
             <ThemeProvider theme={theme}>
                 <CssBaseline/>
                 <BrowserRouter>
-                    <ServiceStatusProvider>
-                        <AppRoutes/>
-                    </ServiceStatusProvider>
+                    <AppRoutes/>
                 </BrowserRouter>
             </ThemeProvider>
         </QueryClientProvider>
