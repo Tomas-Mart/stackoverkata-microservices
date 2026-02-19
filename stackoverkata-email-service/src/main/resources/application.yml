@@ -1,5 +1,5 @@
 server:
-  port: ${EMAIL_SERVICE_PORT:8184}
+  port: ${EMAIL_SERVICE_PORT:8183}
 
 spring:
   application:
