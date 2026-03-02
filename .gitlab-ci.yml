@@ -56,7 +56,7 @@ cache:
       alias: docker
   script:
     - cd $SERVICE_PATH
-    - timeout 60s bash -c "until pg_isready -h postgres -U ${TEST_DB_USER} -d ${TEST_DB_NAME}; do sleep 2; done"
+    - timeout 60s sh -c "until pg_isready -h postgres -U ${TEST_DB_USER} -d ${TEST_DB_NAME}; do sleep 2; done"
     - mvn clean test -B
       -Dspring.profiles.active=test
       -Dspring.datasource.url=jdbc:postgresql://postgres:5432/${TEST_DB_NAME}
@@ -144,10 +144,10 @@ test-eureka-server:
       alias: docker
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - apk add --no-cache maven openjdk17 curl postgresql-client
+    - apk add --no-cache maven openjdk17 curl postgresql-client bash
   script:
     - cd stackoverkata-eureka-server
-    - timeout 60s bash -c "until pg_isready -h postgres -U ${TEST_DB_USER} -d ${TEST_DB_NAME}; do sleep 2; done"
+    - timeout 60s sh -c "until pg_isready -h postgres -U ${TEST_DB_USER} -d ${TEST_DB_NAME}; do sleep 2; done"
     - mvn clean test -B
       -Dspring.profiles.active=test
       -Dspring.datasource.url=jdbc:postgresql://postgres:5432/${TEST_DB_NAME}
@@ -250,10 +250,10 @@ test-auth-service:
       alias: docker
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - apk add --no-cache maven openjdk17 curl postgresql-client
+    - apk add --no-cache maven openjdk17 curl postgresql-client bash
   script:
     - cd stackoverkata-auth-service
-    - timeout 60s bash -c "until pg_isready -h postgres -U ${TEST_DB_USER} -d ${TEST_DB_NAME}; do sleep 2; done"
+    - timeout 60s sh -c "until pg_isready -h postgres -U ${TEST_DB_USER} -d ${TEST_DB_NAME}; do sleep 2; done"
     - mvn clean test -B
       -Dspring.profiles.active=test
       -Dspring.datasource.url=jdbc:postgresql://postgres:5432/${TEST_DB_NAME}
@@ -356,10 +356,10 @@ test-profile-service:
       alias: docker
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - apk add --no-cache maven openjdk17 curl postgresql-client
+    - apk add --no-cache maven openjdk17 curl postgresql-client bash
   script:
     - cd stackoverkata-profile-service
-    - timeout 60s bash -c "until pg_isready -h postgres -U ${TEST_DB_USER} -d ${TEST_DB_NAME}; do sleep 2; done"
+    - timeout 60s sh -c "until pg_isready -h postgres -U ${TEST_DB_USER} -d ${TEST_DB_NAME}; do sleep 2; done"
     - mvn clean test -B
       -Dspring.profiles.active=test
       -Dspring.datasource.url=jdbc:postgresql://postgres:5432/${TEST_DB_NAME}
@@ -462,10 +462,10 @@ test-resource-service:
       alias: docker
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - apk add --no-cache maven openjdk17 curl postgresql-client
+    - apk add --no-cache maven openjdk17 curl postgresql-client bash
   script:
     - cd stackoverkata-resource-service
-    - timeout 60s bash -c "until pg_isready -h postgres -U ${TEST_DB_USER} -d ${TEST_DB_NAME}; do sleep 2; done"
+    - timeout 60s sh -c "until pg_isready -h postgres -U ${TEST_DB_USER} -d ${TEST_DB_NAME}; do sleep 2; done"
     - mvn clean test -B
       -Dspring.profiles.active=test
       -Dspring.datasource.url=jdbc:postgresql://postgres:5432/${TEST_DB_NAME}
@@ -568,10 +568,10 @@ test-config-service:
       alias: docker
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - apk add --no-cache maven openjdk17 curl postgresql-client
+    - apk add --no-cache maven openjdk17 curl postgresql-client bash
   script:
     - cd stackoverkata-cloud-config-service
-    - timeout 60s bash -c "until pg_isready -h postgres -U ${TEST_DB_USER} -d ${TEST_DB_NAME}; do sleep 2; done"
+    - timeout 60s sh -c "until pg_isready -h postgres -U ${TEST_DB_USER} -d ${TEST_DB_NAME}; do sleep 2; done"
     - mvn clean test -B
       -Dspring.profiles.active=test
       -Dspring.datasource.url=jdbc:postgresql://postgres:5432/${TEST_DB_NAME}
@@ -674,10 +674,10 @@ test-email-service:
       alias: docker
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - apk add --no-cache maven openjdk17 curl postgresql-client
+    - apk add --no-cache maven openjdk17 curl postgresql-client bash
   script:
     - cd stackoverkata-email-service
-    - timeout 60s bash -c "until pg_isready -h postgres -U ${TEST_DB_USER} -d ${TEST_DB_NAME}; do sleep 2; done"
+    - timeout 60s sh -c "until pg_isready -h postgres -U ${TEST_DB_USER} -d ${TEST_DB_NAME}; do sleep 2; done"
     - mvn clean test -B
       -Dspring.profiles.active=test
       -Dspring.datasource.url=jdbc:postgresql://postgres:5432/${TEST_DB_NAME}
@@ -780,10 +780,10 @@ test-gateway:
       alias: docker
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - apk add --no-cache maven openjdk17 curl postgresql-client
+    - apk add --no-cache maven openjdk17 curl postgresql-client bash
   script:
     - cd stackoverkata-gateway
-    - timeout 60s bash -c "until pg_isready -h postgres -U ${TEST_DB_USER} -d ${TEST_DB_NAME}; do sleep 2; done"
+    - timeout 60s sh -c "until pg_isready -h postgres -U ${TEST_DB_USER} -d ${TEST_DB_NAME}; do sleep 2; done"
     - mvn clean test -B
       -Dspring.profiles.active=test
       -Dspring.datasource.url=jdbc:postgresql://postgres:5432/${TEST_DB_NAME}
@@ -848,11 +848,12 @@ package-gateway:
 
 build-web-client:
   stage: build
-  image: node:18
+  image: docker:27
   services:
     - docker:27-dind
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - apk add --no-cache nodejs npm
   script:
     - cd stackoverkata-web-client
     - npm ci
@@ -874,11 +875,12 @@ build-web-client:
 
 test-web-client:
   stage: test
-  image: node:18
+  image: docker:27
   services:
     - docker:27-dind
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - apk add --no-cache nodejs npm
   script:
     - cd stackoverkata-web-client
     - npm run test
