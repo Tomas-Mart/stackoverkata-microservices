@@ -211,6 +211,7 @@ charts/
 
 ### Node modules ###
 **/node_modules/
+**/.vite/
 **/package-lock.json
 !stackoverkata-web-client/package-lock.json
 **/yarn.lock
