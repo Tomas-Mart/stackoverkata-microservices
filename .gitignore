@@ -240,4 +240,4 @@ jacoco.exec
 ### Локальные скрипты ###
 restart-all.ps1
 check-my-dev.sh
-*.local.sh
+*.local.shstackoverkata-web-client/coverage/
