@@ -1,10 +1,16 @@
 package stackover.email.service.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.template.Configuration;
 import org.springframework.context.annotation.Bean;
 
 @org.springframework.context.annotation.Configuration
 public class AppConfig {
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
 
     @Bean(name = "freemarkerConfiguration")
     public Configuration getFreeMarkerConfiguration() {

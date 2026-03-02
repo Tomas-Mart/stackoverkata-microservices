@@ -7,28 +7,26 @@ spring:
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
   config:
-    import: "optional:configserver:http://config-service:8080"
+    import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}"
   r2dbc:
-    url: r2dbc:postgresql://postgres-resource:5432/${RESOURCE_DB_NAME:resource_db}
-    username: ${RESOURCE_DB_USER:resource_user}
-    password: ${RESOURCE_DB_PASSWORD:resource_pass}
+    url: r2dbc:postgresql://${RESOURCE_DB_HOST:localhost}:5432/${RESOURCE_DB_NAME:resource_db}
+    username: ${RESOURCE_DB_USER:postgres}
+    password: ${RESOURCE_DB_PASSWORD:root}
     pool:
       initial-size: 5
       max-size: 10
       max-idle-time: 30m
-    properties:
-      dialect: postgresql
   data:
     r2dbc:
       repositories:
         enabled: true
   rabbitmq:
-    host: ${RABBITMQ_HOST:rabbitmq}
-    port: 5672
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
     username: ${RABBITMQ_USER:guest}
     password: ${RABBITMQ_PASSWORD:guest}
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     consumer:
       group-id: resource-group
       auto-offset-reset: earliest
@@ -42,10 +40,10 @@ eureka:
   instance:
     instance-id: ${spring.application.name}:${random.int}
     prefer-ip-address: true
-    hostname: ${EUREKA_HOSTNAME:stackover-resource-service}
+    hostname: ${EUREKA_HOSTNAME:localhost}
   client:
     service-url:
-      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://eureka-server:8761/eureka/}
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}  # Убрана лишняя }
     register-with-eureka: true
     fetch-registry: true
     healthcheck:
@@ -62,18 +60,17 @@ management:
   metrics:
     export:
       prometheus:
-        enabled: true
 
 app:
-  services:
-    auth:
-      url: http://stackover-auth-service
-    profile:
-      url: http://stackover-profile-service
   jwt:
     access-expiration-ms: 86400000
     refresh-expiration-ms: 2592000000
     secret: ${JWT_SECRET:KX9pPmTqYtXuWrZv3w6z5C8F1J4H7N2B5E9R0DcGbQa}
+  services:
+    auth:
+      url: ${AUTH_SERVICE_URL:http://localhost:8181}
+    profile:
+      url: ${PROFILE_SERVICE_URL:http://localhost:8182}
 
 logging:
   level:

@@ -1,5 +1,5 @@
 server:
-  port: ${CONFIG_SERVICE_PORT:8080}
+  port: ${CONFIG_SERVICE_PORT:8888}
 
 spring:
   application:
@@ -15,15 +15,21 @@ spring:
           clone-on-start: true
           default-label: ${CONFIG_REPO_BRANCH:main}
           timeout: 10
+          force-pull: true
+        bootstrap: true
+    compatibility-verifier:
+      enabled: false
 
 eureka:
   instance:
     instance-id: ${spring.application.name}:${random.int}
     prefer-ip-address: true
-    hostname: ${EUREKA_HOSTNAME:stackover-config-service}
+    hostname: ${EUREKA_HOSTNAME:localhost}
+    lease-renewal-interval-in-seconds: 30
+    lease-expiration-duration-in-seconds: 90
   client:
     service-url:
-      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://eureka-server:8761/eureka/}
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
     register-with-eureka: true
     fetch-registry: true
     healthcheck:
@@ -40,12 +46,13 @@ management:
       probes:
         enabled: true
   metrics:
-    export:
-      prometheus:
-        enabled: true
+    tags:
+      application: ${spring.application.name}
 
 logging:
   level:
     root: ${LOG_LEVEL:INFO}
     org.springframework.cloud.config.server: DEBUG
     org.eclipse.jgit: DEBUG
+    com.netflix.discovery: INFO
+    com.netflix.eureka: INFO

@@ -8,9 +8,9 @@ import stackover.auth.service.dto.profile.ProfilePostDto;
 import stackover.auth.service.model.Account;
 import stackover.auth.service.util.enums.RoleNameEnum;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 
 /**

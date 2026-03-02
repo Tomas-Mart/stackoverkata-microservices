@@ -7,7 +7,7 @@ spring:
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
   config:
-    import: "optional:configserver:http://config-service:8080"
+    import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}"
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:587}
@@ -19,15 +19,29 @@ spring:
           auth: true
           starttls:
             enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    connection-timeout: 5000
+    listener:
+      simple:
+        acknowledge-mode: auto
+        concurrency: 1
+        max-concurrency: 5
 
 eureka:
   instance:
     instance-id: ${spring.application.name}:${random.int}
     prefer-ip-address: true
-    hostname: ${EUREKA_HOSTNAME:stackover-email-service}
+    hostname: ${EUREKA_HOSTNAME:localhost}
   client:
     service-url:
-      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://eureka-server:8761/eureka/}
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
     register-with-eureka: true
     fetch-registry: true
     healthcheck:
@@ -44,8 +58,9 @@ management:
   metrics:
     export:
       prometheus:
-        enabled: true
 
 logging:
   level:
     root: ${LOG_LEVEL:INFO}
+    org.springframework.mail: DEBUG
+    com.stackoverkata.email: DEBUG

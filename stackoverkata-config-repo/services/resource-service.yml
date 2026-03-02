@@ -2,16 +2,47 @@ spring:
   application:
     name: stackover-resource-service
   r2dbc:
-    url: r2dbc:postgresql://postgres-resource:5432/stackover_resource_service
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
+    url: r2dbc:postgresql://postgres-resource:5432/${RESOURCE_DB_NAME:resource_db}
+    username: ${RESOURCE_DB_USER:postgres}
+    password: ${RESOURCE_DB_PASSWORD:root}
+    pool:
+      initial-size: 5
+      max-size: 15
+      max-idle-time: 30m
   rabbitmq:
-    host: rabbitmq
+    host: ${RABBITMQ_HOST:rabbitmq}
     port: 5672
-    username: ${RABBITMQ_USER}
-    password: ${RABBITMQ_PASSWORD}
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
+    consumer:
+      group-id: resource-group
+      auto-offset-reset: earliest
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 eureka:
   client:
     service-url:
-      defaultZone: http://stackoverkata-eureka-server:8761/eureka/
+      defaultZone: http://eureka-server:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+---
+spring:
+  config:
+    activate:
+      on-profile: kubernetes
+  r2dbc:
+    url: r2dbc:postgresql://${POSTGRES_RESOURCE_SERVICE_HOST}:${POSTGRES_RESOURCE_SERVICE_PORT}/${POSTGRES_RESOURCE_SERVICE_DB}

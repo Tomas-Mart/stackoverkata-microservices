@@ -14,7 +14,7 @@ import stackover.auth.service.security.JwtTokenProvider;
 import stackover.auth.service.service.AccountService;
 import stackover.auth.service.service.RefreshTokenService;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import java.time.Instant;
 import java.util.UUID;
 

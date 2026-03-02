@@ -7,11 +7,11 @@ spring:
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
   config:
-    import: "optional:configserver:http://config-service:8080"
+    import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}"
   r2dbc:
-    url: r2dbc:postgresql://postgres-profile:5432/${PROFILE_DB_NAME:profile_db}
-    username: ${PROFILE_DB_USER:profile_user}
-    password: ${PROFILE_DB_PASSWORD:profile_pass}
+    url: r2dbc:postgresql://${PROFILE_DB_HOST:localhost}:5432/${PROFILE_DB_NAME:profile_db}
+    username: ${PROFILE_DB_USER:postgres}
+    password: ${PROFILE_DB_PASSWORD:root}
     pool:
       initial-size: 10
       max-size: 20
@@ -27,10 +27,10 @@ eureka:
   instance:
     instance-id: ${spring.application.name}:${random.int}
     prefer-ip-address: true
-    hostname: ${EUREKA_HOSTNAME:stackover-profile-service}
+    hostname: ${EUREKA_HOSTNAME:localhost}
   client:
     service-url:
-      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://eureka-server:8761/eureka/}
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}  # Исправлено: убрана лишняя }
     register-with-eureka: true
     fetch-registry: true
     healthcheck:
@@ -47,7 +47,6 @@ management:
   metrics:
     export:
       prometheus:
-        enabled: true
 
 app:
   jwt:
@@ -62,7 +61,6 @@ resilience4j:
         register-health-indicator: true
         sliding-window-size: 10
         minimum-number-of-calls: 5
-        permitted-number-of-calls-in-half-open-state: 3
         wait-duration-in-open-state: 5000
         failure-rate-threshold: 50
 

@@ -38,7 +38,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Spring Cloud Version (единая для всех) -->
-        <spring-cloud.version>2023.0.0</spring-cloud.version>
+        <spring-cloud.version>2023.0.1</spring-cloud.version>
 
         <!-- Libraries Versions -->
         <lombok.version>1.18.30</lombok.version>
@@ -55,9 +55,9 @@
         <mysql-connector.version>8.0.33</mysql-connector.version>
         <r2dbc-postgresql.version>1.0.7.RELEASE</r2dbc-postgresql.version>
         <hibernate.version>6.3.1.Final</hibernate.version>
-        <validation-api.version>2.0.1.Final</validation-api.version>
-        <hibernate-validator.version>6.2.0.Final</hibernate-validator.version>
         <surefire-plugin.version>3.1.2</surefire-plugin.version>
+        <jakarta-validation.version>3.0.2</jakarta-validation.version>
+        <hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
     </properties>
 
     <dependencyManagement>
@@ -173,10 +173,12 @@
 
             <!-- Validation API -->
             <dependency>
-                <groupId>javax.validation</groupId>
-                <artifactId>validation-api</artifactId>
-                <version>${validation-api.version}</version>
+                <groupId>jakarta.validation</groupId>
+                <artifactId>jakarta.validation-api</artifactId>
+                <version>${jakarta-validation.version}</version>
             </dependency>
+
+            <!-- Hibernate Validator (реализация) -->
             <dependency>
                 <groupId>org.hibernate.validator</groupId>
                 <artifactId>hibernate-validator</artifactId>

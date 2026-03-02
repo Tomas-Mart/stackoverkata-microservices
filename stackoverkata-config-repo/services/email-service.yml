@@ -2,15 +2,29 @@ spring:
   application:
     name: stackover-email-service
   mail:
-    host: ${SMTP_HOST}
-    port: ${SMTP_PORT}
+    host: ${SMTP_HOST:smtp.gmail.com}
+    port: ${SMTP_PORT:587}
     username: ${SMTP_USER}
     password: ${SMTP_PASSWORD}
     properties:
-      mail.smtp.auth: true
-      mail.smtp.starttls.enable: true
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 eureka:
   client:
     service-url:
-      defaultZone: http://stackoverkata-eureka-server:8761/eureka/
+      defaultZone: http://eureka-server:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
