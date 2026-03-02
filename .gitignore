@@ -241,3 +241,4 @@ jacoco.exec
 restart-all.ps1
 check-my-dev.sh
 *.local.shstackoverkata-web-client/coverage/
+stackoverkata-web-client/coverage/
